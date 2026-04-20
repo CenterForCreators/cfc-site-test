@@ -644,8 +644,11 @@ async function loadNFTs(){
     document.getElementById('stat-nfts').textContent = allNFTs.length;
     renderFilteredNFTs();
   } catch(e){
-    grid.innerHTML = \`<div class="empty-state"><div class="empty-icon">&#127759;</div><div class="empty-title">Marketplace Loading</div><div class="empty-sub">Unable to load listings right now. Please refresh the page.</div></div>\`;
-    console.error('Market load failed:',e);
+    grid.innerHTML = `<div class="empty-state">
+  <div class="empty-icon">&#127759;</div>
+  <div class="empty-title">Marketplace Loading</div>
+  <div class="empty-sub">Unable to load listings right now. Please refresh the page.</div>
+</div>`;
   }
 }
 
