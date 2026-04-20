@@ -613,6 +613,7 @@ function renderNFTCard(nft){
       <div class="nft-badge ${getCategoryBadgeClass(cat)}">${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>
       ${soldOut ? '<div class="sold-out-badge">Sold Out</div>' : ''}
     </div>
+    </div>`;
     <div class="nft-body">
       <div class="nft-title">\${nft.name || 'Untitled NFT'}</div>
       <div class="nft-desc">\${nft.description || 'No description available.'}</div>
