@@ -694,7 +694,7 @@ function showBuyStep1(){
   const xrpPrice = buyNFT.price_xrp ? buyNFT.price_xrp+' XRP' : null;
   const rlusdPrice = buyNFT.price_rlusd ? buyNFT.price_rlusd+' RLUSD' : null;
   const currentPrice = buyCurrency === 'XRP' ? xrpPrice : rlusdPrice;
-  document.getElementById('buy-modal-content').innerHTML = \`
+  document.getElementById('buy-modal-content').innerHTML = `
     <div class="modal-title">Purchase NFT</div>
     \${imgUrl ? \`<img src="\${imgUrl}" class="buy-nft-img" alt="\${buyNFT.name}" onerror="this.style.display='none'"/>\` : \`<div style="height:140px;background:var(--bg4);border-radius:10px;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;font-size:3rem;">\${getCategoryEmoji(buyNFT.category)}</div>\`}
     <div class="buy-nft-name">\${buyNFT.name}</div>
