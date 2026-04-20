@@ -656,7 +656,7 @@ function renderFilteredNFTs(){
   const grid = document.getElementById('nft-grid');
   const filtered = activeCategory === 'all' ? allNFTs : allNFTs.filter(n=>(n.category||'art').toLowerCase()===activeCategory);
   if(!filtered.length){
-    grid.innerHTML = \`<div class="empty-state"><div class="empty-icon">&#127912;</div><div class="empty-title">No NFTs in this category</div><div class="empty-sub">Check back soon or browse all categories.</div></div>\`;
+  grid.innerHTML = `<div class="empty-state"><div class="empty-icon">&#127912;</div><div class="empty-title">No NFTs in this category</div><div class="empty-sub">Check back soon or browse all categories.</div></div>`; 
     return;
   }
   grid.innerHTML = filtered.map(renderNFTCard).join('');
