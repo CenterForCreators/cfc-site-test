@@ -493,96 +493,6 @@ const obs = new IntersectionObserver((entries)=>{
 },{threshold:0.1});
 revealEls.forEach(el=>obs.observe(el));
 
-// ── WALLET ──
-// ── XAMAN WALLET ──
-const XUMM_API_KEY = 'eebd4c17-c3ef-435b-b891-89afb99e259e';
-let connectedWallet = null;
-function loadWallet(){
-  // Safety net: construct window.xumm if not yet set (matches original working site)
-  if(!window.xumm && typeof Xumm !== 'undefined'){
-    try{ window.xumm = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e'); }catch(e){}
-  }
-  const saved = localStorage.getItem('cfcWallet') || localStorage.getItem('xrpl_account') || localStorage.getItem('xummAccount');
-  if(saved && saved.startsWith('r') && saved.length >= 25){
-    connectedWallet = saved;
-    updateWalletUI();
-    fetchBalances(saved);
-    loadOrders();
-  }
-}
-
-// Exact doConnect() from working file
-async function doConnect(){
-  try{
-    if(!window.xumm || !window.xumm.payload){
-      return;
-    }
-    const sub = await window.xumm.payload.createAndSubscribe({
-      txjson: { TransactionType: 'SignIn', SignIn: true },
-      options: { return_url: { web: location.href, app: location.href } }
-    }, function(){});
-    if (sub?.created?.next?.always){
-      const link = sub.created.next.always;
-      const ua = navigator.userAgent || '';
-      const isLinkedIn = ua.includes('LinkedIn');
-      if (isLinkedIn) {
-        window.open(link, '_blank');
-      } else {
-        window.location.href = link;
-      }
-    }
-    const res = await sub.resolved;
-    const acct = res?.signed ? (res?.response?.account || null) : null;
-    if(!acct){ return; }
-    setConnected(acct);
-  }catch(e){
-    console.error('Xaman connect error', e);
-  }
-}
-
-function setConnected(acc){
-  if(!acc) return;
-  if(connectedWallet && connectedWallet === acc) return;
-  connectedWallet = acc;
-  localStorage.setItem('cfcWallet', acc);
-  localStorage.setItem('xrpl_account', acc);
-  updateWalletUI();
-  fetchBalances(acc);
-  loadOrders();
-}
-
-function disconnectWallet(){
-  connectedWallet = null;
-  localStorage.removeItem('cfcWallet');
-  localStorage.removeItem('xrpl_account');
-  localStorage.removeItem('xummAccount');
-  document.getElementById('xrp-bal').textContent = '--';
-  document.getElementById('cfc-bal').textContent = '--';
-  updateWalletUI();
-  document.getElementById('my-orders').style.display = 'none';
-}
-
-function updateWalletUI(){
-  const banner = document.getElementById('wallet-banner');
-  const connectBtn = banner ? banner.querySelector('.connect-btn') : null;
-  const connectedRow = document.getElementById('wallet-connected-row');
-  const addrText = document.getElementById('wallet-addr-text');
-  if(connectedWallet){
-    const short = connectedWallet.slice(0,8)+'...'+connectedWallet.slice(-4);
-    if(connectBtn) connectBtn.style.display = 'none';
-    if(connectedRow) connectedRow.style.display = 'flex';
-    if(addrText) addrText.textContent = short;
-    const myOrders = document.getElementById('my-orders');
-    if(myOrders) myOrders.style.display = 'block';
-  } else {
-    if(connectBtn) connectBtn.style.display = '';
-    if(connectedRow) connectedRow.style.display = 'none';
-    const myOrders = document.getElementById('my-orders');
-    if(myOrders) myOrders.style.display = 'none';
-  }
-}
-
-
 // ── FAUCET ──
 async function claimFaucet(){
   if(!connectedWallet){ doConnect(); return; }
@@ -948,6 +858,96 @@ async function redeemOrder(orderId) {
     wireConnect();
   }
 })();
+</script>
+ <script> 
+  // ── WALLET ──
+// ── XAMAN WALLET ──
+const XUMM_API_KEY = 'eebd4c17-c3ef-435b-b891-89afb99e259e';
+let connectedWallet = null;
+function loadWallet(){
+  // Safety net: construct window.xumm if not yet set (matches original working site)
+  if(!window.xumm && typeof Xumm !== 'undefined'){
+    try{ window.xumm = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e'); }catch(e){}
+  }
+  const saved = localStorage.getItem('cfcWallet') || localStorage.getItem('xrpl_account') || localStorage.getItem('xummAccount');
+  if(saved && saved.startsWith('r') && saved.length >= 25){
+    connectedWallet = saved;
+    updateWalletUI();
+    fetchBalances(saved);
+    loadOrders();
+  }
+}
+
+// Exact doConnect() from working file
+async function doConnect(){
+  try{
+    if(!window.xumm || !window.xumm.payload){
+      return;
+    }
+    const sub = await window.xumm.payload.createAndSubscribe({
+      txjson: { TransactionType: 'SignIn', SignIn: true },
+      options: { return_url: { web: location.href, app: location.href } }
+    }, function(){});
+    if (sub?.created?.next?.always){
+      const link = sub.created.next.always;
+      const ua = navigator.userAgent || '';
+      const isLinkedIn = ua.includes('LinkedIn');
+      if (isLinkedIn) {
+        window.open(link, '_blank');
+      } else {
+        window.location.href = link;
+      }
+    }
+    const res = await sub.resolved;
+    const acct = res?.signed ? (res?.response?.account || null) : null;
+    if(!acct){ return; }
+    setConnected(acct);
+  }catch(e){
+    console.error('Xaman connect error', e);
+  }
+}
+
+function setConnected(acc){
+  if(!acc) return;
+  if(connectedWallet && connectedWallet === acc) return;
+  connectedWallet = acc;
+  localStorage.setItem('cfcWallet', acc);
+  localStorage.setItem('xrpl_account', acc);
+  updateWalletUI();
+  fetchBalances(acc);
+  loadOrders();
+}
+
+function disconnectWallet(){
+  connectedWallet = null;
+  localStorage.removeItem('cfcWallet');
+  localStorage.removeItem('xrpl_account');
+  localStorage.removeItem('xummAccount');
+  document.getElementById('xrp-bal').textContent = '--';
+  document.getElementById('cfc-bal').textContent = '--';
+  updateWalletUI();
+  document.getElementById('my-orders').style.display = 'none';
+}
+
+function updateWalletUI(){
+  const banner = document.getElementById('wallet-banner');
+  const connectBtn = banner ? banner.querySelector('.connect-btn') : null;
+  const connectedRow = document.getElementById('wallet-connected-row');
+  const addrText = document.getElementById('wallet-addr-text');
+  if(connectedWallet){
+    const short = connectedWallet.slice(0,8)+'...'+connectedWallet.slice(-4);
+    if(connectBtn) connectBtn.style.display = 'none';
+    if(connectedRow) connectedRow.style.display = 'flex';
+    if(addrText) addrText.textContent = short;
+    const myOrders = document.getElementById('my-orders');
+    if(myOrders) myOrders.style.display = 'block';
+  } else {
+    if(connectBtn) connectBtn.style.display = '';
+    if(connectedRow) connectedRow.style.display = 'none';
+    const myOrders = document.getElementById('my-orders');
+    if(myOrders) myOrders.style.display = 'none';
+  }
+}
 </script>
 </body>
 </html>
