@@ -512,7 +512,7 @@ function loadWallet(){
 }
 
 // Exact connect() from working file
-async function connect(){
+window.connect = async function(){
   try{
     const sub = await xumm.payload.createAndSubscribe({
       txjson: { TransactionType: 'SignIn' },
@@ -536,7 +536,9 @@ async function connect(){
 
   }catch(e){ console.error('connect error', e); }
 }
-
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('connectBtn')?.addEventListener('click', window.connect);
+});
 // Exact doConnect() from working file
 async function doConnect(){
   try{
