@@ -509,26 +509,6 @@ function loadWallet(){
   }
 }
 
-// Exact connect() from working file
-async function connect(){
-  try{
-    const sub = await xumm.payload.createAndSubscribe({
-      txjson: { TransactionType: 'SignIn' },
-      options: {
-        return_url: {
-          web: location.href,
-          app: location.href
-        }
-      }
-    }, function(){});
-    const res = await sub.resolved;
-    if (res?.signed && res?.response?.account){
-      window.connectedAccount = res.response.account;
-      setConnected(res.response.account);
-    }
-  }catch(e){ console.error('connect error', e); }
-}
-
 // Exact doConnect() from working file
 async function doConnect(){
   try{
