@@ -523,11 +523,17 @@ async function connect(){
         }
       }
     }, function(){});
+
     const res = await sub.resolved;
+
     if (res?.signed && res?.response?.account){
-      window.connectedAccount = res.response.account;
-      setConnected(res.response.account);
+      connectedWallet = res.response.account;
+      localStorage.setItem('cfcWallet', res.response.account);
+      updateWalletUI();
+      fetchBalances(res.response.account);
+      loadOrders();
     }
+
   }catch(e){ console.error('connect error', e); }
 }
 
