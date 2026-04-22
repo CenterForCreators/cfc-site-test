@@ -607,31 +607,30 @@ function renderNFTCard(nft){
   const available = nft.quantity ?? 0;
   const cat = nft.category || 'art';
   const soldOut = available <= 0;
-  return `<div class="nft-card reveal" data-cat="${cat.toLowerCase()}" data-id="${nft.id}">
-    <div class="nft-img-wrap">
-     ${imgUrl ? `<img class="nft-img" src="${imgUrl}" alt="${nft.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="nft-img-placeholder" style="display:none">${getCategoryEmoji(cat)}</div>` : `<div class="nft-img-placeholder">${getCategoryEmoji(cat)}</div>`}
-      <div class="nft-badge ${getCategoryBadgeClass(cat)}">${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>
-      ${soldOut ? '<div class="sold-out-badge">Sold Out</div>' : ''}
-    </div>
-    </div>`;
-    <div class="nft-body">
-      <div class="nft-title">\${nft.name || 'Untitled NFT'}</div>
-      <div class="nft-desc">\${nft.description || 'No description available.'}</div>
-      <div class="nft-qty">\${available} available\${nft.sold_count ? ' &middot; '+nft.sold_count+' sold' : ''}</div>
-      <div class="nft-footer">
-        <div class="nft-prices">
-          \${nft.price_xrp ? \`<div class="nft-price-xrp">\${nft.price_xrp} XRP</div>\` : ''}
-          \${nft.price_rlusd ? \`<div class="nft-price-rlusd">\${nft.price_rlusd} RLUSD</div>\` : ''}
-        </div>
-        <div class="nft-buy-btns">
-          \${soldOut ? '<span style="color:var(--text-dim);font-size:0.75rem;">Sold Out</span>' : \`
-            \${nft.price_xrp ? \`<button class="btn-buy-xrp" onclick="initBuy(\${nft.id},'XRP')" title="Buy with XRP">XRP</button>\` : ''}
-            \${nft.price_rlusd ? \`<button class="btn-buy-rlusd" onclick="initBuy(\${nft.id},'RLUSD')" title="Buy with RLUSD">RLUSD</button>\` : ''}
-          \`}
-        </div>
+ return `<div class="nft-card reveal" data-cat="${cat.toLowerCase()}" data-id="${nft.id}">
+  <div class="nft-img-wrap">
+    ${imgUrl ? `<img class="nft-img" src="${imgUrl}" alt="${nft.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="nft-img-placeholder" style="display:none">${getCategoryEmoji(cat)}</div>` : `<div class="nft-img-placeholder">${getCategoryEmoji(cat)}</div>`}
+    <div class="nft-badge ${getCategoryBadgeClass(cat)}">${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>
+    ${soldOut ? '<div class="sold-out-badge">Sold Out</div>' : ''}
+  </div>
+  <div class="nft-body">
+    <div class="nft-title">${nft.name || 'Untitled NFT'}</div>
+    <div class="nft-desc">${nft.description || 'No description available.'}</div>
+    <div class="nft-qty">${available} available${nft.sold_count ? ' &middot; '+nft.sold_count+' sold' : ''}</div>
+    <div class="nft-footer">
+      <div class="nft-prices">
+        ${nft.price_xrp ? `<div class="nft-price-xrp">${nft.price_xrp} XRP</div>` : ''}
+        ${nft.price_rlusd ? `<div class="nft-price-rlusd">${nft.price_rlusd} RLUSD</div>` : ''}
+      </div>
+      <div class="nft-buy-btns">
+        ${soldOut ? '<span style="color:var(--text-dim);font-size:0.75rem;">Sold Out</span>' : `
+          ${nft.price_xrp ? `<button class="btn-buy-xrp" onclick="initBuy(${nft.id},'XRP')" title="Buy with XRP">XRP</button>` : ''}
+          ${nft.price_rlusd ? `<button class="btn-buy-rlusd" onclick="initBuy(${nft.id},'RLUSD')" title="Buy with RLUSD">RLUSD</button>` : ''}
+        `}
       </div>
     </div>
-  </div>\`;
+  </div>
+</div>`;
 }
 
 async function loadNFTs(){
@@ -645,8 +644,11 @@ async function loadNFTs(){
     document.getElementById('stat-nfts').textContent = allNFTs.length;
     renderFilteredNFTs();
   } catch(e){
-    grid.innerHTML = \`<div class="empty-state"><div class="empty-icon">&#127759;</div><div class="empty-title">Marketplace Loading</div><div class="empty-sub">Unable to load listings right now. Please refresh the page.</div></div>\`;
-    console.error('Market load failed:',e);
+    grid.innerHTML = `<div class="empty-state">
+  <div class="empty-icon">&#127759;</div>
+  <div class="empty-title">Marketplace Loading</div>
+  <div class="empty-sub">Unable to load listings right now. Please refresh the page.</div>
+</div>`;
   }
 }
 
