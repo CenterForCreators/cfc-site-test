@@ -511,30 +511,24 @@ function getXumm(){
 async function xamanConnect(){
   try {
     const xumm = getXumm();
-
-    const sub = await xumm.payload.createAndSubscribe({
-      txjson: { TransactionType: 'SignIn' },
-      options: {
-        return_url: {
-          web: 'https://centerforcreators.com/nft-marketplace',
-          app: 'https://centerforcreators.com/nft-marketplace'
-        }
-      }
-    }, function(){});
-
-    const res = await sub.resolved;
-
-    if (res?.signed && res?.response?.account){
-      const account = res.response.account;
+    // Show a connecting indicator
+    const btn = document.querySelector('#banner-disconnected button');
+    if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
+    await xumm.authorize();
+    const account = await xumm.user.account;
+    if(account){
       connectedWallet = account;
       localStorage.setItem('cfcWallet', account);
       updateWalletUI();
       fetchBalances(account);
       loadOrders();
+    } else {
+      if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
     }
-
   } catch(e) {
     console.error('Xaman connect error:', e);
+    const btn = document.querySelector('#banner-disconnected button');
+    if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
   }
 }
 
