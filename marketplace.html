@@ -504,7 +504,7 @@ function loadWallet(){
 // XAMAN wallet connect via SDK
 let xummInstance = null;
 function getXumm(){
-  if(!xummInstance) xummInstance = new Xumm('ffa83df2-e68d-4172-a77c-e7af7e5274ea');
+  if(!xummInstance) xummInstance = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
   return xummInstance;
 }
 
@@ -936,5 +936,32 @@ async function redeemOrder(orderId) {
 }
 
 </script>
+  <script>
+  async function xamanConnect(){
+  try{
+    const xumm = getXumm();
+    const sub = await xumm.payload.createAndSubscribe({
+      txjson: { TransactionType: 'SignIn' },
+      options: {
+        return_url: {
+          web: 'https://centerforcreators.com/nft-marketplace',
+          app: 'https://centerforcreators.com/nft-marketplace'
+        }
+      }
+    }, function(){});
+
+    const res = await sub.resolved;
+    if (res?.signed && res?.response?.account){
+      connectedWallet = res.response.account;
+      localStorage.setItem('cfcWallet', res.response.account);
+      updateWalletUI();
+      fetchBalances(res.response.account);
+      loadOrders();
+    }
+  }catch(e){
+    console.error('Xaman connect error:', e);
+  }
+}
+    </script>
 </body>
 </html>
