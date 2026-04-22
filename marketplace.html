@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>CFC NFT Marketplace | Center for Creators</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
- <script>
-const MARKET_API = "https://cfc-nft-shared-mint-backend.onrender.com";
-</script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <style>
 :root {
@@ -61,7 +58,7 @@ nav { position:fixed; top:0; left:0; right:0; z-index:1000; display:flex; align-
 .section-tag::before { content:none; }
 .tag-gold { color:var(--gold); }
 .section-title { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.8rem,3vw,2.6rem); font-weight:700; line-height:1.15; margin-bottom:1rem; }
-.section-sub { color:#87CEEB; font-size:1.05rem; line-height:1.65; max-width:600px; }
+.section-sub { color:#87CEEB; font-size:1.05rem; line-height:1.65; max-width:640px; margin:0 auto 1.5rem; text-align:center; }
 
 /* HERO */
 #market-hero { padding:3rem 0 5rem; text-align:center; position:relative; overflow:hidden; }
@@ -94,24 +91,41 @@ nav { position:fixed; top:0; left:0; right:0; z-index:1000; display:flex; align-
 /* MARKETPLACE */
 #listings { padding:60px 0 100px; }
 .listings-header { text-align:center; margin-bottom:3rem; }
-.filter-tabs { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin-top:1.5rem; }
-.filter-tab { padding:0.45rem 1.2rem; border-radius:100px; border:1px solid var(--border); background:transparent; color:#E5E7EB; font-size:0.95rem; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:inherit; }
-.filter-tab:hover, .filter-tab.active { border-color:var(--gold); color:var(--gold); background:rgba(240,180,41,0.07); }
+.view-tabs { display:inline-flex; gap:0; margin:2rem 0 0; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:12px; overflow:hidden; }
+.view-tab { flex:1; padding:0.75rem 1rem; background:transparent; border:none; color:#8B90A0; font-size:0.92rem; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:inherit; text-align:center; }
+.view-tab:hover { color:#E5E7EB; background:rgba(255,255,255,0.05); }
+.view-tab.active { background:rgba(240,180,41,0.12); color:var(--gold); border-bottom:2px solid var(--gold); }
+
+.filter-tabs { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin-top:1rem; }
+.filter-tab { padding:0.45rem 1.2rem; border-radius:100px; border:2px solid transparent; background:rgba(255,255,255,0.06); color:#C0C8D8; font-size:0.92rem; font-weight:700; cursor:pointer; transition:all 0.2s; font-family:inherit; }
+.filter-tab:hover { color:#fff; background:rgba(255,255,255,0.1); }
+.filter-tab[data-cat="all"] { border-color:rgba(255,255,255,0.2); }
+.filter-tab[data-cat="all"].active { background:#E5E7EB; color:#0C0C1D; border-color:#E5E7EB; }
+.filter-tab[data-cat="book"] { border-color:#F0B429; color:#F0B429; }
+.filter-tab[data-cat="book"].active { background:#F0B429; color:#000; border-color:#F0B429; }
+.filter-tab[data-cat="article"] { border-color:#87CEEB; color:#87CEEB; }
+.filter-tab[data-cat="article"].active { background:#87CEEB; color:#000; border-color:#87CEEB; }
+.filter-tab[data-cat="workshop"] { border-color:#10B981; color:#10B981; }
+.filter-tab[data-cat="workshop"].active { background:#10B981; color:#fff; border-color:#10B981; }
+.filter-tab[data-cat="service"] { border-color:#A78BFA; color:#A78BFA; }
+.filter-tab[data-cat="service"].active { background:#7C3AED; color:#fff; border-color:#7C3AED; }
+.filter-tab[data-cat="art"] { border-color:#F472B6; color:#F472B6; }
+.filter-tab[data-cat="art"].active { background:#F43F5E; color:#fff; border-color:#F43F5E; }
 .nft-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:1.5rem; margin-top:2.5rem; }
 .nft-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; transition:all 0.3s; position:relative; }
 .nft-card:hover { transform:translateY(-6px); border-color:rgba(240,180,41,0.3); box-shadow:0 20px 60px rgba(240,180,41,0.08),0 0 0 1px rgba(240,180,41,0.1); }
 .nft-card:hover .nft-img { transform:scale(1.05); }
-.nft-img-wrap { height:210px; overflow:hidden; background:var(--bg3); position:relative; }
+.nft-img-wrap { height:325px; overflow:hidden; background:var(--bg3); position:relative; flex-shrink:0; }
 .nft-img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
 .nft-img-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:3rem; background:linear-gradient(135deg,var(--bg3),var(--bg4)); }
-.nft-badge { position:absolute; top:12px; right:12px; padding:0.3rem 0.7rem; border-radius:100px; font-size:0.7rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; }
-.badge-book { background:rgba(240,180,41,0.15); color:var(--gold); border:1px solid rgba(240,180,41,0.3); }
-.badge-art { background:rgba(124,58,237,0.15); color:var(--purple-light); border:1px solid rgba(124,58,237,0.3); }
-.badge-workshop { background:rgba(16,185,129,0.15); color:var(--green); border:1px solid rgba(16,185,129,0.3); }
-.badge-service { background:rgba(59,130,246,0.15); color:#60A5FA; border:1px solid rgba(59,130,246,0.3); }
-.badge-article { background:rgba(251,191,36,0.12); color:#FBBF24; border:1px solid rgba(251,191,36,0.3); }
+.nft-badge { position:absolute; top:10px; left:10px; padding:0.28rem 0.7rem; border-radius:100px; font-size:0.7rem; font-weight:800; letter-spacing:0.07em; text-transform:uppercase; background:rgba(0,0,0,0.62); color:#fff; border:1.5px solid rgba(255,255,255,0.22); backdrop-filter:blur(10px); box-shadow:0 2px 10px rgba(0,0,0,0.5); }
+.badge-book { border-color:#F0B429; color:#F0B429; }
+.badge-art { border-color:#F472B6; color:#F472B6; }
+.badge-workshop { border-color:#10B981; color:#10B981; }
+.badge-service { border-color:#A78BFA; color:#A78BFA; }
+.badge-article { border-color:#87CEEB; color:#87CEEB; }
 .nft-body { padding:1.2rem; }
-.nft-title { font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:700; margin-bottom:0.4rem; }
+.nft-title { font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:700; margin-bottom:0.4rem; line-height:1.4; min-height:2.8em; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .nft-desc { font-size:0.78rem; color:var(--text-muted); line-height:1.5; margin-bottom:0.8rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .nft-qty { font-size:0.72rem; color:var(--text-dim); margin-bottom:0.8rem; }
 .nft-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; }
@@ -217,6 +231,7 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
   .modal-box { padding:1.5rem; }
 }
 </style>
+  <script src="https://xumm.app/assets/cdn/xumm.min.js"></script>
 </head>
 <body>
 
@@ -233,11 +248,6 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
   <li><a href="nft-creator.html">Create</a></li>
 </ul>
   <div class="nav-ctas">
-    <div class="wallet-balances">
-      <span class="bal-pill">XRP <span id="xrp-bal">--</span></span>
-      <span class="bal-pill cfc-pill">CFC <span id="cfc-bal">--</span></span>
-    </div>
-    <button class="btn-ghost" id="wallet-btn" onclick="openWalletModal()">Connect Wallet</button>
     <a href="nft-creator.html" class="btn-gold">Create NFT</a>
   </div>
 </nav>
@@ -284,11 +294,18 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
 
 <!-- WALLET BANNER -->
 <div id="wallet-banner">
-  <span class="wallet-banner-text">Connect your XRPL wallet to buy NFTs, claim CFC tokens, and view your orders.</span>
-  <button class="btn-ghost" onclick="openWalletModal()">Connect Wallet to Buy</button>
-  <div class="wallet-addr-display" id="wallet-addr-display">
-    <span id="wallet-addr-text"></span>
-    <button onclick="disconnectWallet()" style="background:transparent;border:none;color:var(--text-dim);cursor:pointer;font-size:0.75rem;">Disconnect</button>
+  <!-- Disconnected state -->
+  <div id="banner-disconnected" style="display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;">
+    <button onclick="xamanConnect()" style="background:linear-gradient(135deg,#B8860B,#FFD700);color:#0C0C1D;font-weight:700;font-size:1rem;padding:0.65rem 2rem;border:none;border-radius:10px;cursor:pointer;font-family:inherit;box-shadow:0 0 18px rgba(255,215,0,0.45);transition:all 0.2s;">&#128279; Connect Wallet</button>
+  </div>
+  <!-- Connected state -->
+  <div id="banner-connected" style="display:none;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;">
+    <span id="wallet-addr-text" style="color:var(--gold);font-size:0.88rem;"></span>
+    <span class="bal-pill xrp-pill">XRP <span id="xrp-bal">--</span></span>
+    <span class="bal-pill cfc-pill">CFC <span id="cfc-bal">--</span></span>
+    <button onclick="disconnectWallet()" style="background:transparent;border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:8px;padding:0.3rem 0.9rem;cursor:pointer;font-size:0.8rem;font-family:inherit;">Disconnect</button>
+  </div>
+  <div class="wallet-addr-display" id="wallet-addr-display" style="display:none;">
   </div>
 </div>
 
@@ -297,6 +314,15 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
   <p class="faucet-text">&#127834; <span>Daily CFC Faucet is Live</span>. Claim your 25 free CFC tokens every day.</p>
   <button class="btn-faucet" onclick="claimFaucet()">Claim Now &rarr;</button>
   <div id="faucet-msg"></div>
+</div>
+
+<!-- VIEW TABS -->
+<div class="container" style="padding-top:2rem;">
+  <div class="view-tabs">
+    <button class="view-tab active" onclick="switchView('listings')">Marketplace</button>
+    <button class="view-tab" onclick="switchView('my-orders')">My Purchases</button>
+    <button class="view-tab" onclick="switchView('redeem')">Redeem</button>
+  </div>
 </div>
 
 <!-- NFT LISTINGS -->
@@ -322,13 +348,26 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
 </section>
 
 <!-- MY ORDERS -->
-<section id="my-orders">
+<section id="my-orders" style="display:none;">
   <div class="container">
     <div class="section-tag tag-gold">My Library</div>
     <h2 class="section-title">Your NFT Library</h2>
     <p class="section-sub">NFTs you have purchased. Each one unlocks exclusive content and AI Agent interaction.</p>
     <div id="orders-grid" class="orders-grid">
       <div class="nft-loading"><div class="nft-loading-spinner"></div><div>Loading your library...</div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- REDEEM SECTION -->
+<section id="redeem-view" style="display:none;">
+  <div class="container" style="text-align:center;padding:4rem 1rem;">
+    <div class="section-tag tag-gold">Rewards</div>
+    <h2 class="section-title">Redeem Your NFTs</h2>
+    <p class="section-sub" style="margin:0 auto 2rem;">Connect your wallet to view and redeem purchased NFTs for exclusive content and CFC token rewards.</p>
+    <div id="redeem-list" style="max-width:600px;margin:0 auto;">
+      <div style="color:#8B90A0;padding:3rem;">Connect your wallet to see redeemable NFTs.</div>
     </div>
   </div>
 </section>
@@ -384,23 +423,7 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
   </div>
 </footer>
 
-<!-- WALLET MODAL -->
-<div class="modal-overlay" id="wallet-modal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('wallet-modal')">&times;</button>
-    <div class="modal-title">Connect Your XRPL Wallet</div>
-    <p class="modal-sub">Enter your XRPL wallet address to view balances, buy NFTs, and claim CFC tokens. Your wallet address starts with the letter r.</p>
-    <div class="form-group">
-      <label class="form-label">XRPL Wallet Address</label>
-      <input class="form-input" id="wallet-input" type="text" placeholder="rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" />
-    </div>
-    <div id="wallet-error" class="alert alert-error" style="display:none;"></div>
-    <button class="btn-full-gold" onclick="connectWallet()">Connect Wallet</button>
-    <button class="btn-full-outline" onclick="closeModal('wallet-modal')">Cancel</button>
-    <hr class="divider" />
-    <p style="font-size:0.78rem;color:var(--text-dim);text-align:center;">Using XAMAN? Open XAMAN app, tap the wallet icon, and copy your r... address above.</p>
-  </div>
-</div>
+
 
 <!-- BUY MODAL -->
 <div class="modal-overlay" id="buy-modal">
@@ -478,27 +501,42 @@ function loadWallet(){
   }
 }
 
-function openWalletModal(){
-  if(connectedWallet){ disconnectWallet(); return; }
-  document.getElementById('wallet-input').value = '';
-  document.getElementById('wallet-error').style.display='none';
-  openModal('wallet-modal');
+// XAMAN wallet connect via SDK
+let xummInstance = null;
+function getXumm(){
+  if(!xummInstance) xummInstance = new Xumm('ffa83df2-e68d-4172-a77c-e7af7e5274ea');
+  return xummInstance;
 }
 
-function connectWallet(){
-  const addr = document.getElementById('wallet-input').value.trim();
-  if(!addr.startsWith('r') || addr.length < 25){
-    const err = document.getElementById('wallet-error');
-    err.textContent = 'Please enter a valid XRPL wallet address (starts with r)';
-    err.style.display = 'block';
-    return;
+async function xamanConnect(){
+  try {
+    const xumm = getXumm();
+    // Show a connecting indicator
+    const btn = document.querySelector('#banner-disconnected button');
+    if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
+    await xumm.authorize();
+    const account = await xumm.user.account;
+    if(account){
+      connectedWallet = account;
+      localStorage.setItem('cfcWallet', account);
+      updateWalletUI();
+      fetchBalances(account);
+      loadOrders();
+    } else {
+      if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
+    }
+  } catch(e) {
+    console.error('Xaman connect error:', e);
+    const btn = document.querySelector('#banner-disconnected button');
+    if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
   }
-  connectedWallet = addr;
-  localStorage.setItem('cfcWallet', addr);
-  closeModal('wallet-modal');
-  updateWalletUI();
-  fetchBalances(addr);
-  loadOrders();
+}
+
+// Keep openWalletModal as alias for backwards compat
+function openWalletModal(){ xamanConnect(); }
+
+function connectWallet(){
+  // legacy — not used
 }
 
 function disconnectWallet(){
@@ -511,28 +549,18 @@ function disconnectWallet(){
 }
 
 function updateWalletUI(){
-  const btn = document.getElementById('wallet-btn');
-  const banner = document.getElementById('wallet-banner');
-  const addrDisplay = document.getElementById('wallet-addr-display');
+  const connected = document.getElementById('banner-connected');
+  const disconnected = document.getElementById('banner-disconnected');
   const addrText = document.getElementById('wallet-addr-text');
-  const bannerText = banner.querySelector('.wallet-banner-text');
   if(connectedWallet){
     const short = connectedWallet.slice(0,8)+'...'+connectedWallet.slice(-4);
-    btn.textContent = short;
-    btn.style.borderColor = 'rgba(16,185,129,0.4)';
-    btn.style.color = 'var(--green)';
-    addrDisplay.style.display = 'flex';
     addrText.textContent = 'Connected: '+short;
-    if(bannerText) bannerText.style.display = 'none';
-    banner.querySelector('button').style.display = 'none';
+    connected.style.display = 'flex';
+    disconnected.style.display = 'none';
     document.getElementById('my-orders').style.display = 'block';
   } else {
-    btn.textContent = 'Connect Wallet';
-    btn.style.borderColor = '';
-    btn.style.color = '';
-    addrDisplay.style.display = 'none';
-    if(bannerText) bannerText.style.display = '';
-    banner.querySelector('button').style.display = '';
+    connected.style.display = 'none';
+    disconnected.style.display = 'flex';
     document.getElementById('my-orders').style.display = 'none';
   }
 }
@@ -610,7 +638,7 @@ function renderNFTCard(nft){
  return `<div class="nft-card reveal" data-cat="${cat.toLowerCase()}" data-id="${nft.id}">
   <div class="nft-img-wrap">
     ${imgUrl ? `<img class="nft-img" src="${imgUrl}" alt="${nft.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="nft-img-placeholder" style="display:none">${getCategoryEmoji(cat)}</div>` : `<div class="nft-img-placeholder">${getCategoryEmoji(cat)}</div>`}
-    <div class="nft-badge ${getCategoryBadgeClass(cat)}">${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>
+    <div class="nft-badge ${getCategoryBadgeClass(cat)}">${getCategoryEmoji(cat)} ${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>
     ${soldOut ? '<div class="sold-out-badge">Sold Out</div>' : ''}
   </div>
   <div class="nft-body">
@@ -654,9 +682,10 @@ async function loadNFTs(){
 
 function renderFilteredNFTs(){
   const grid = document.getElementById('nft-grid');
-  const filtered = activeCategory === 'all' ? allNFTs : allNFTs.filter(n=>(n.category||'art').toLowerCase()===activeCategory);
+  const normCat = c => c.toLowerCase().replace(/s$/, '');
+  const filtered = activeCategory === 'all' ? allNFTs : allNFTs.filter(n => normCat(n.category||'art') === normCat(activeCategory));
   if(!filtered.length){
-    grid.innerHTML = \`<div class="empty-state"><div class="empty-icon">&#127912;</div><div class="empty-title">No NFTs in this category</div><div class="empty-sub">Check back soon or browse all categories.</div></div>\`;
+  grid.innerHTML = `<div class="empty-state"><div class="empty-icon">&#127912;</div><div class="empty-title">No NFTs in this category</div><div class="empty-sub">Check back soon or browse all categories.</div></div>`; 
     return;
   }
   grid.innerHTML = filtered.map(renderNFTCard).join('');
@@ -694,31 +723,31 @@ function showBuyStep1(){
   const xrpPrice = buyNFT.price_xrp ? buyNFT.price_xrp+' XRP' : null;
   const rlusdPrice = buyNFT.price_rlusd ? buyNFT.price_rlusd+' RLUSD' : null;
   const currentPrice = buyCurrency === 'XRP' ? xrpPrice : rlusdPrice;
-  document.getElementById('buy-modal-content').innerHTML = \`
+  document.getElementById('buy-modal-content').innerHTML = `
     <div class="modal-title">Purchase NFT</div>
-    \${imgUrl ? \`<img src="\${imgUrl}" class="buy-nft-img" alt="\${buyNFT.name}" onerror="this.style.display='none'"/>\` : \`<div style="height:140px;background:var(--bg4);border-radius:10px;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;font-size:3rem;">\${getCategoryEmoji(buyNFT.category)}</div>\`}
-    <div class="buy-nft-name">\${buyNFT.name}</div>
-    <div class="buy-nft-meta">\${buyNFT.description?.substring(0,100) || ''}\${buyNFT.description?.length > 100 ? '...' : ''}</div>
+    ${imgUrl ? `<img src="${imgUrl}" class="buy-nft-img" alt="${buyNFT.name}" onerror="this.style.display='none'"/>` : `<div style="height:140px;background:var(--bg4);border-radius:10px;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;font-size:3rem;">${getCategoryEmoji(buyNFT.category)}</div>`}
+    <div class="buy-nft-name">${buyNFT.name}</div>
+    <div class="buy-nft-meta">${buyNFT.description?.substring(0,100) || ''}${buyNFT.description?.length > 100 ? '...' : ''}</div>
     <hr class="divider" />
-    \${(xrpPrice && rlusdPrice) ? \`<div class="currency-toggle">
-      <button class="cur-btn xrp \${buyCurrency==='XRP'?'active':''}" onclick="setBuyCurrency('XRP')">XRP</button>
-      <button class="cur-btn rlusd \${buyCurrency==='RLUSD'?'active':''}" onclick="setBuyCurrency('RLUSD')">RLUSD</button>
-    </div>\` : ''}
+    ${(xrpPrice && rlusdPrice) ? `<div class="currency-toggle">
+      <button class="cur-btn xrp ${buyCurrency==='XRP'?'active':''}" onclick="setBuyCurrency('XRP')">XRP</button>
+      <button class="cur-btn rlusd ${buyCurrency==='RLUSD'?'active':''}" onclick="setBuyCurrency('RLUSD')">RLUSD</button>
+    </div>` : ''}
     <div class="price-row">
       <span class="price-label">Purchase Price</span>
-      <span class="price-val" id="buy-price-display">\${currentPrice || 'N/A'}</span>
+      <span class="price-val" id="buy-price-display">${currentPrice || 'N/A'}</span>
     </div>
     <div class="price-row" style="margin-bottom:1.5rem;">
       <span class="price-label">Buying as</span>
-      <span style="font-size:0.82rem;color:var(--text-muted);">\${connectedWallet.slice(0,10)}...\${connectedWallet.slice(-4)}</span>
+      <span style="font-size:0.82rem;color:var(--text-muted);">${connectedWallet.slice(0,10)}...${connectedWallet.slice(-4)}</span>
     </div>
     <div class="alert alert-warning" style="font-size:0.78rem;margin-bottom:1.5rem;">You will be redirected to sign in XAMAN. Keep your XAMAN app ready.</div>
     <div id="buy-error" class="alert alert-error" style="display:none;"></div>
     <button class="btn-full-gold" id="confirm-buy-btn" onclick="confirmBuy()">
-      Confirm Purchase with \${buyCurrency} &rarr;
+      Confirm Purchase with ${buyCurrency} &rarr;
     </button>
     <button class="btn-full-outline" onclick="closeModal('buy-modal')">Cancel</button>
-  \`;
+  `;
 }
 
 function setBuyCurrency(cur){
@@ -752,19 +781,19 @@ async function confirmBuy(){
 function showXamanStep(payload){
   const link = payload.link || payload.next?.always || '#';
   const uuid = payload.uuid;
-  document.getElementById('buy-modal-content').innerHTML = \`
+  document.getElementById('buy-modal-content').innerHTML = `
     <div class="modal-title">Sign in XAMAN</div>
     <p class="modal-sub">Scan the QR code with XAMAN or tap the button below to open XAMAN and sign your transaction.</p>
     <div class="xaman-section">
       <canvas id="qr-canvas"></canvas>
       <br />
-      <a href="\${link}" target="_blank" class="xaman-link-btn">Open in XAMAN App &rarr;</a>
+      <a href="${link}" target="_blank" class="xaman-link-btn">Open in XAMAN App &rarr;</a>
     </div>
     <hr class="divider" />
     <div class="spinner"></div>
     <div class="status-text" id="xaman-status">Waiting for your signature in XAMAN...</div>
     <button class="btn-full-outline" style="margin-top:1rem;" onclick="closeModal('buy-modal')">Cancel</button>
-  \`;
+  `;
   // Generate QR
   setTimeout(()=>{
     const qrCanvas = document.getElementById('qr-canvas');
@@ -806,21 +835,21 @@ async function loadOrders(){
     if(!r.ok) throw new Error('Failed');
     const orders = await r.json();
     if(!orders.length){
-      grid.innerHTML = \`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">&#128196;</div><div class="empty-title">No NFTs yet</div><div class="empty-sub">Purchase an NFT from the marketplace above to start your library.</div></div>\`;
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">&#128196;</div><div class="empty-title">No NFTs yet</div><div class="empty-sub">Purchase an NFT from the marketplace above to start your library.</div></div>`;
       return;
     }
-    grid.innerHTML = orders.map(o=>\`
+    grid.innerHTML = orders.map(o=>`
       <div class="order-card">
-        <div class="order-name">\${o.marketplace_nft?.name || 'NFT #'+o.marketplace_nft_id}</div>
+        <div class="order-name">${o.marketplace_nft?.name || 'NFT #'+o.marketplace_nft_id}</div>
         <div class="order-meta">
-          Purchased for \${o.price} \${o.currency}<br/>
-          <span style="font-size:0.72rem;">\${o.created_at ? new Date(o.created_at).toLocaleDateString() : ''}</span>
+          Purchased for ${o.price} ${o.currency}<br/>
+          <span style="font-size:0.72rem;">${o.created_at ? new Date(o.created_at).toLocaleDateString() : ''}</span>
         </div>
-        <span class="order-badge \${o.reward_claimed ? 'badge-completed' : 'badge-pending'}">\${o.reward_claimed ? 'Reward Claimed' : 'Active'}</span>
+        <span class="order-badge ${o.reward_claimed ? 'badge-completed' : 'badge-pending'}">${o.reward_claimed ? 'Reward Claimed' : 'Active'}</span>
       </div>
-    \`).join('');
+    `).join('');
   } catch(e){
-    grid.innerHTML = \`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">&#128196;</div><div class="empty-title">Library unavailable</div><div class="empty-sub">Unable to load your orders. Please refresh.</div></div>\`;
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">&#128196;</div><div class="empty-title">Library unavailable</div><div class="empty-sub">Unable to load your orders. Please refresh.</div></div>`;
   }
 }
 
@@ -845,6 +874,67 @@ loadNFTs();
       link.classList.add("active");
     }
   });
+
+function switchView(view) {
+  // Update tab active state
+  document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+  const tabMap = {'listings': 0, 'my-orders': 1, 'redeem': 2};
+  document.querySelectorAll('.view-tab')[tabMap[view]]?.classList.add('active');
+
+  // Show/hide sections
+  document.getElementById('listings').style.display = view === 'listings' ? '' : 'none';
+  document.getElementById('my-orders').style.display = view === 'my-orders' ? '' : 'none';
+  document.getElementById('redeem-view').style.display = view === 'redeem' ? '' : 'none';
+
+  if (view === 'my-orders') loadOrders();
+  if (view === 'redeem') loadRedeem();
+}
+
+function loadRedeem() {
+  const el = document.getElementById('redeem-list');
+  if (!connectedWallet) {
+    el.innerHTML = '<div style="color:#8B90A0;padding:3rem;">Connect your wallet to see redeemable NFTs.</div>';
+    return;
+  }
+  el.innerHTML = '<div style="color:#87CEEB;padding:2rem;">Loading your NFTs...</div>';
+  fetch(MARKET_API + '/api/orders/by-wallet/' + connectedWallet)
+    .then(r => r.json())
+    .then(orders => {
+      if (!orders.length) {
+        el.innerHTML = '<div style="color:#8B90A0;padding:2rem;">No NFTs to redeem yet. Purchase from the Marketplace!</div>';
+        return;
+      }
+      el.innerHTML = orders.map(o => `
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.25rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;">
+          <div style="text-align:left;">
+            <div style="font-weight:600;color:#E5E7EB;margin-bottom:0.25rem;">${o.name || 'NFT #'+o.marketplace_nft_id}</div>
+            <div style="font-size:0.8rem;color:#87CEEB;">Purchased for ${o.price} ${o.currency}</div>
+          </div>
+          <div>
+            ${o.reward_claimed
+              ? '<span style="color:#34D399;font-size:0.8rem;font-weight:600;">&#10003; Reward Claimed</span>'
+              : `<button class="btn-full-gold" style="padding:0.5rem 1.2rem;font-size:0.85rem;" onclick="redeemOrder(${o.id})">Redeem</button>`
+            }
+          </div>
+        </div>`).join('');
+    })
+    .catch(() => { el.innerHTML = '<div style="color:#F87171;">Error loading NFTs.</div>'; });
+}
+
+async function redeemOrder(orderId) {
+  if (!connectedWallet) { alert('Connect your wallet first.'); return; }
+  try {
+    const r = await fetch(MARKET_API + '/api/orders/redeem', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ order_id: orderId, wallet: connectedWallet })
+    });
+    const d = await r.json();
+    if (d.success) { alert('Redeemed! Check your content in the Reader.'); loadRedeem(); }
+    else alert(d.error || 'Redeem failed.');
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
 </script>
 </body>
 </html>
