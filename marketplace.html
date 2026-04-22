@@ -607,11 +607,11 @@ function renderNFTCard(nft){
   const available = nft.quantity ?? 0;
   const cat = nft.category || 'art';
   const soldOut = available <= 0;
-  return \`<div class="nft-card reveal" data-cat="\${cat.toLowerCase()}" data-id="\${nft.id}">
+  return `<div class="nft-card reveal" data-cat="${cat.toLowerCase()}" data-id="${nft.id}">
     <div class="nft-img-wrap">
-      \${imgUrl ? \`<img class="nft-img" src="\${imgUrl}" alt="\${nft.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="nft-img-placeholder" style="display:none">\${getCategoryEmoji(cat)}</div>\` : \`<div class="nft-img-placeholder">\${getCategoryEmoji(cat)}</div>\`}
-      <div class="nft-badge \${getCategoryBadgeClass(cat)}">\${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>
-      \${soldOut ? '<div class="sold-out-badge">Sold Out</div>' : ''}
+     ${imgUrl ? `<img class="nft-img" src="${imgUrl}" ...  alt="${nft.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="nft-img-placeholder" style="display:none">${getCategoryEmoji(cat)}</div>` : `<div class="nft-img-placeholder">${getCategoryEmoji(cat)}</div>`}
+      <div class="nft-badge ${getCategoryBadgeClass(cat)}">${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>
+      ${soldOut ? '<div class="sold-out-badge">Sold Out</div>' : ''}
     </div>
     <div class="nft-body">
       <div class="nft-title">\${nft.name || 'Untitled NFT'}</div>
