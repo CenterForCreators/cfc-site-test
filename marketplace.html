@@ -515,7 +515,8 @@ function getXumm(){
 async function xamanConnect(){
   const btn = document.querySelector('#banner-disconnected button');
   try {
-    const xumm = getXumm();
+    const xumm = window.xumm;
+    if(!xumm || !xumm.payload){ if(btn){ btn.textContent='Connect Wallet'; btn.disabled=false; } return; }
     if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
 
     const sub = await xumm.payload.createAndSubscribe({
