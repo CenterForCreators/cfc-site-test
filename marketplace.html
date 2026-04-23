@@ -516,7 +516,7 @@ async function xamanConnect(){
 
     const sub = await xumm.payload.createAndSubscribe({
       
-      txconsole.log(sub);json: { TransactionType: 'SignIn' },
+      txjson: { TransactionType: 'SignIn' },
       options: {
         return_url: {
           web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
