@@ -231,11 +231,7 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
   .modal-box { padding:1.5rem; }
 }
 </style>
-<script src="https://xumm.app/assets/cdn/xumm.min.js"></script>
- <script 
-  onload="try{ window.xumm = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e'); }catch(e){ console.error(e); }" 
-  src="https://cfc-nft-marketplace-frontend.onrender.com/sdk/xumm.min.js">
-</script> 
+  <script src="https://xumm.app/assets/cdn/xumm.min.js"></script>
 </head>
 <body>
 
@@ -508,34 +504,18 @@ function loadWallet(){
 // XAMAN wallet connect via SDK
 let xummInstance = null;
 function getXumm(){
-  if(!xummInstance) xummInstance = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
+  if(!xummInstance) xummInstance = new Xumm('ffa83df2-e68d-4172-a77c-e7af7e5274ea');
   return xummInstance;
 }
 
 async function xamanConnect(){
-  const btn = document.querySelector('#banner-disconnected button');
   try {
-    const xumm = window.xumm;
-    if(!xumm || !xumm.payload){ if(btn){ btn.textContent='Connect Wallet'; btn.disabled=false; } return; }
+    const xumm = getXumm();
+    // Show a connecting indicator
+    const btn = document.querySelector('#banner-disconnected button');
     if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
-
-    const sub = await xumm.payload.createAndSubscribe({
-      txjson: { TransactionType: 'SignIn' },
-      options: {
-        return_url: {
-          web: location.href,
-          app: location.href
-        }
-      }
-    }, function(){});
-
-    if (sub?.created?.next?.always) {
-      window.location.href = sub.created.next.always;
-    }
-
-    const res = await sub.resolved;
-    const account = res?.signed ? res?.response?.account : null;
-
+    await xumm.authorize();
+    const account = await xumm.user.account;
     if(account){
       connectedWallet = account;
       localStorage.setItem('cfcWallet', account);
@@ -547,9 +527,11 @@ async function xamanConnect(){
     }
   } catch(e) {
     console.error('Xaman connect error:', e);
+    const btn = document.querySelector('#banner-disconnected button');
     if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
   }
 }
+
 // Keep openWalletModal as alias for backwards compat
 function openWalletModal(){ xamanConnect(); }
 
@@ -954,28 +936,5 @@ async function redeemOrder(orderId) {
 }
 
 </script>
-
-// Capture wallet on return from Xaman (fires after page reloads back from Xaman redirect)
-document.addEventListener('DOMContentLoaded', function() {
-  function tryWireXummEvents() {
-    if (window.xumm && window.xumm.on) {
-      window.xumm.on("ready", function() {
-        try { if (window.xumm.user && window.xumm.user.account) setConnected(window.xumm.user.account); } catch(e) {}
-      });
-      window.xumm.on("success", function(e) {
-        var acc = (e && e.me && e.me.account) ? e.me.account : (e && e.account ? e.account : null);
-        if (acc) setConnected(acc);
-      });
-      window.xumm.on("retrieved", function(e) {
-        var acc = (e && e.me && e.me.account) ? e.me.account : (e && e.account ? e.account : null);
-        if (acc) setConnected(acc);
-      });
-    } else {
-      setTimeout(tryWireXummEvents, 500);
-    }
-  }
-  tryWireXummEvents();
-});
-
 </body>
 </html>
