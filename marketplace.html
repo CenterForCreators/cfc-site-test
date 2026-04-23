@@ -523,7 +523,10 @@ async function xamanConnect(){
         }
       }
     }, function(){});
-
+    
+if (sub && sub.created && sub.created.next && sub.created.next.always) {
+  window.open(sub.created.next.always, '_blank');
+}
     const res = await sub.resolved;
     const account = res?.signed ? res?.response?.account : null;
 
