@@ -504,28 +504,29 @@ function loadWallet(){
 // XAMAN wallet connect via SDK
 let xummInstance = null;
 function getXumm(){
- if(!xummInstance) xummInstance = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
+  if(!xummInstance) xummInstance = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
   return xummInstance;
 }
 
 async function xamanConnect(){
   try {
     const xumm = getXumm();
-    // Show a connecting indicator
     const btn = document.querySelector('#banner-disconnected button');
     if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
-    const sub = await xumm.payload.createAndSubscribe({
-  txjson: { TransactionType: 'SignIn' },
-  options: {
-    return_url: {
-  web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
-  app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
-}
-  }
-}, function(){});
 
-const res = await sub.resolved;
-const account = res?.signed ? res?.response?.account : null;
+    const sub = await xumm.payload.createAndSubscribe({
+      txjson: { TransactionType: 'SignIn' },
+      options: {
+        return_url: {
+          web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
+          app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
+        }
+      }
+    }, function(){});
+
+    const res = await sub.resolved;
+    const account = res?.signed ? res?.response?.account : null;
+
     if(account){
       connectedWallet = account;
       localStorage.setItem('cfcWallet', account);
@@ -541,7 +542,6 @@ const account = res?.signed ? res?.response?.account : null;
     if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
   }
 }
-
 // Keep openWalletModal as alias for backwards compat
 function openWalletModal(){ xamanConnect(); }
 
