@@ -901,10 +901,7 @@ async function redeemOrder(orderId) {
   } catch(e) { alert('Error: ' + e.message); }
 }
 </script>
-  <script>
-  // XAMAN wallet connect via SDK
-
-
+ <script>
 async function xamanConnect(){
   try {
     const xumm = window.xumm;
@@ -917,32 +914,18 @@ async function xamanConnect(){
           app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
         }
       }
-    }, function(){});
+    });
 
     if (sub?.created?.next?.always) {
       window.location.href = sub.created.next.always;
-    }
-
-    const res = await sub.resolved;
-    const account = res?.signed ? res?.response?.account : null;
-
-    if(account){
-      connectedWallet = account;
-      localStorage.setItem('cfcWallet', account);
-      updateWalletUI();
-      fetchBalances(account);
-      loadOrders();
     }
 
   } catch(e) {
     console.error('Xaman connect error:', e);
   }
 }
+
 window.xamanConnect = xamanConnect;
-function openWalletModal(){ xamanConnect(); }
-function connectWallet(){
-  // legacy — not used
-}
-    </script>
+</script>
 </body>
 </html>
