@@ -509,6 +509,8 @@ function loadWallet(){
 let xummInstance = null;
 async function connect(){
   try{
+    const xumm = window.xumm;
+    if(!xumm){ console.error('XUMM SDK not ready'); return; }
     const sub = await xumm.payload.createAndSubscribe({
       txjson: { TransactionType: 'SignIn' },
       options: {
