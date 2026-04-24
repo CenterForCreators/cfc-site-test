@@ -501,17 +501,12 @@ function loadWallet(){
   }
 }
 
-// XAMAN wallet connect via SDK
-let xummInstance = null;
-function getXumm(){
-  if(!xummInstance) xummInstance = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
-  return xummInstance;
-}
+
 
 async function xamanConnect(){
   console.log('CLICKED');
   try {
-    const xumm = getXumm();
+    const xumm = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
     const btn = document.querySelector('#banner-disconnected button');
     if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
 
