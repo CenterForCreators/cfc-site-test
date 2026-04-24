@@ -506,29 +506,34 @@ function loadWallet(){
 let xummInstance = null;
 async function connect(){
   try{
-    const xumm = window.xumm;
-    if(!xumm){ console.error('XUMM SDK not ready'); return; }
-    const sub = await xumm.payload.createAndSubscribe({
-      txjson: { TransactionType: 'SignIn' },
+    const sub = await window.xumm.payload.createAndSubscribe({
+      txjson: { 
+        TransactionType: 'SignIn',
+        SignIn: true
+      },
       options: {
         return_url: {
-          web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
-          app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
+          web: location.href,
+          app: location.href
         }
       }
     }, function(){});
-if (sub?.created?.next?.always) {
-  window.location.href = sub.created.next.always;
-}
+
+    if (sub?.created?.next?.always){
+      window.location.href = sub.created.next.always;
+    }
+
     const res = await sub.resolved;
+
     if (res?.signed && res?.response?.account){
-      connectedWallet = res.response.account;
-      localStorage.setItem('cfc_wallet', res.response.account);
+      window.connectedAccount = res.response.account;
       sessionStorage.setItem('connectedAccount', res.response.account);
       sessionStorage.setItem('xummSignedIn', '1');
-      setConnected(res.response.account);
     }
-  }catch(e){ console.error('Connection cancelled.', e); }
+
+  }catch(e){
+    console.error('Connection cancelled.', e);
+  }
 }
 
 function openWalletModal(){ xamanConnect(); }
