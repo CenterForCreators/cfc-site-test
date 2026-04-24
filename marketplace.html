@@ -231,7 +231,12 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
   .modal-box { padding:1.5rem; }
 }
 </style>
+</script>
+  <script src="https://xumm.app/assets/cdn/xumm.min.js"></script>
 
+<script>
+  window.xumm = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
+</script>
 </head>
 <body>
 
@@ -897,12 +902,6 @@ async function redeemOrder(orderId) {
   } catch(e) { alert('Error: ' + e.message); }
 }
 
-</script>
-  <script src="https://xumm.app/assets/cdn/xumm.min.js"></script>
-
-<script>
-  window.xumm = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
-</script>
   <script>
   // XAMAN wallet connect via SDK
 
