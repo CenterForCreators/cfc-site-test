@@ -297,7 +297,7 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
 <div id="wallet-banner">
   <!-- Disconnected state -->
   <div id="banner-disconnected" style="display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;">
-    <button onclick="connect()" style="background:linear-gradient(135deg,#B8860B,#FFD700);color:#0C0C1D;font-weight:700;font-size:1rem;padding:0.65rem 2rem;border:none;border-radius:10px;cursor:pointer;font-family:inherit;box-shadow:0 0 18px rgba(255,215,0,0.45);transition:all 0.2s;">&#128279; Connect Wallet</button>
+    <button onclick="xamanConnect()" style="background:linear-gradient(135deg,#B8860B,#FFD700);color:#0C0C1D;font-weight:700;font-size:1rem;padding:0.65rem 2rem;border:none;border-radius:10px;cursor:pointer;font-family:inherit;box-shadow:0 0 18px rgba(255,215,0,0.45);transition:all 0.2s;">&#128279; Connect Wallet</button>
   </div>
   <!-- Connected state -->
   <div id="banner-connected" style="display:none;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;">
@@ -504,35 +504,45 @@ function loadWallet(){
 
 // XAMAN wallet connect via SDK
 let xummInstance = null;
-async function connect(){
-  try{
-    const sub = await window.xumm.payload.createAndSubscribe({
-      txjson: { 
-        TransactionType: 'SignIn',
-        SignIn: true
-      },
+
+function getXumm(){
+  if(!xummInstance) {
+    xummInstance = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
+  }
+  return xummInstance;
+}
+
+async function xamanConnect(){
+  try {
+    const xumm = getXumm();
+
+    const sub = await xumm.payload.createAndSubscribe({
+      txjson: { TransactionType: 'SignIn' },
       options: {
         return_url: {
-  web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
-  app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
-}
+          web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
+          app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
+        }
       }
     }, function(){});
 
-    if (sub?.created?.next?.always){
+    if (sub?.created?.next?.always) {
       window.location.href = sub.created.next.always;
     }
 
     const res = await sub.resolved;
+    const account = res?.signed ? res?.response?.account : null;
 
-    if (res?.signed && res?.response?.account){
-      window.connectedAccount = res.response.account;
-      sessionStorage.setItem('connectedAccount', res.response.account);
-      sessionStorage.setItem('xummSignedIn', '1');
+    if(account){
+      connectedWallet = account;
+      localStorage.setItem('cfcWallet', account);
+      updateWalletUI();
+      fetchBalances(account);
+      loadOrders();
     }
 
-  }catch(e){
-    console.error('Connection cancelled.', e);
+  } catch(e) {
+    console.error('Xaman connect error:', e);
   }
 }
 window.connect = connect;
