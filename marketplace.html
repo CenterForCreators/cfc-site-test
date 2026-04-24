@@ -517,7 +517,9 @@ async function connect(){
         }
       }
     }, function(){});
-
+if (sub?.created?.next?.always) {
+  window.location.href = sub.created.next.always;
+}
     const res = await sub.resolved;
     if (res?.signed && res?.response?.account){
       connectedWallet = res.response.account;
