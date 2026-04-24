@@ -524,6 +524,7 @@ async function xamanConnect(){
         }
       }
     }, function(){});
+    console.log('CREATED:', sub.created);
  if (sub?.created?.next?.always) {
   window.location.href = sub.created.next.always;
 }   
