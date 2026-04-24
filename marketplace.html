@@ -545,8 +545,8 @@ async function xamanConnect(){
     console.error('Xaman connect error:', e);
   }
 }
-window.connect = connect;
-function openWalletModal(){ connect(); }
+window.xamanConnect = xamanConnect;
+function openWalletModal(){ xamanConnect(); }
 function connectWallet(){
   // legacy — not used
 }
