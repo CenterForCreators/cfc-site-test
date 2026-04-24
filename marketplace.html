@@ -905,18 +905,11 @@ async function redeemOrder(orderId) {
 </script>
   <script>
   // XAMAN wallet connect via SDK
-let xummInstance = null;
 
-function getXumm(){
-  if(!xummInstance) {
-    xummInstance = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
-  }
-  return xummInstance;
-}
 
 async function xamanConnect(){
   try {
-    const xumm = getXumm();
+    const xumm = window.xumm;
 
     const sub = await xumm.payload.createAndSubscribe({
       txjson: { TransactionType: 'SignIn' },
