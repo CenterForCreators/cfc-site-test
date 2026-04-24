@@ -535,7 +535,7 @@ async function connect(){
     console.error('Connection cancelled.', e);
   }
 }
-
+window.connect = connect;
 function openWalletModal(){ connect(); }
 function connectWallet(){
   // legacy — not used
