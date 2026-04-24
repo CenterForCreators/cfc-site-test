@@ -524,10 +524,10 @@ async function xamanConnect(){
         }
       }
     }, function(){});
-   xumm.openSignRequest(sub); 
-if (sub?.created?.next?.always) {
-
-}
+ if (sub?.created?.next?.always) {
+  window.location.href = sub.created.next.always;
+}   
+  
     const res = await sub.resolved;
     const account = res?.signed ? res?.response?.account : null;
 
