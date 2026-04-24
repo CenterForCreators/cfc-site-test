@@ -510,20 +510,15 @@ async function xamanConnect(){
     const btn = document.querySelector('#banner-disconnected button');
     if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
 
-    const sub = await xumm.payload.createAndSubscribe({
-      
-      txjson: { TransactionType: 'SignIn' },
-      options: {
-        return_url: {
-          web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
-          app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
-        }
-      }
-    }, function(){});
-    console.log('CREATED:', sub.created);
- if (sub?.created?.next?.always) {
-  window.location.href = sub.created.next.always;
-}   
+    const payload = await xumm.payload.create({
+  txjson: { TransactionType: 'SignIn' }
+});
+
+console.log('PAYLOAD:', payload);
+
+if (payload?.next?.always) {
+  window.location.href = payload.next.always;
+}
   
     const res = await sub.resolved;
     const account = res?.signed ? res?.response?.account : null;
