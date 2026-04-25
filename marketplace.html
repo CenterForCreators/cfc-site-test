@@ -235,6 +235,21 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
 
 <script>
   window.xumm = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
+
+  // Capture wallet on return from Xaman
+  if(window.xumm && window.xumm.on){
+    window.xumm.on('ready', () => {
+      try{ if(window.xumm.user && window.xumm.user.account) setConnected(window.xumm.user.account); }catch(e){}
+    });
+    window.xumm.on('success', (e) => {
+      const acc = (e && e.me && e.me.account) ? e.me.account : (e && e.account ? e.account : null);
+      if(acc) setConnected(acc);
+    });
+    window.xumm.on('retrieved', (e) => {
+      const acc = (e && e.me && e.me.account) ? e.me.account : (e && e.account ? e.account : null);
+      if(acc) setConnected(acc);
+    });
+  }
 </script>
 </head>
 <body>
@@ -907,14 +922,14 @@ async function xamanConnect(){
     const xumm = window.xumm;
 
     const sub = await xumm.payload.createAndSubscribe({
-      txjson: { TransactionType: 'SignIn' },
+      txjson: { TransactionType: 'SignIn', SignIn: true },
       options: {
         return_url: {
           web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
           app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
         }
       }
-    });
+    }, function(){});
 
     if (sub?.created?.next?.always) {
       window.location.href = sub.created.next.always;
