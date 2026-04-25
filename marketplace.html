@@ -921,11 +921,11 @@ async function xamanConnect(){
   try {
     console.log('[XAMAN] Button clicked');
     if(!window.xumm || !window.xumm.payload){
-      console.error('[XAMAN] window.xumm not ready:', window.xumm);
+      console.error('[XAMAN] window.xumm not ready');
       return;
     }
-    console.log('[XAMAN] Calling createAndSubscribe...');
-    const sub = await window.xumm.payload.createAndSubscribe({
+    console.log('[XAMAN] Creating payload...');
+    const payload = await window.xumm.payload.create({
       txjson: { TransactionType: 'SignIn' },
       options: {
         return_url: {
@@ -933,18 +933,13 @@ async function xamanConnect(){
           app: location.href
         }
       }
-    }, function(){});
-
-    console.log('[XAMAN] sub result:', JSON.stringify(sub));
-    console.log('[XAMAN] sub.created:', sub && sub.created);
-    console.log('[XAMAN] next.always:', sub && sub.created && sub.created.next && sub.created.next.always);
-
-    if (sub && sub.created && sub.created.next && sub.created.next.always) {
-      window.location.href = sub.created.next.always;
+    });
+    console.log('[XAMAN] payload:', JSON.stringify(payload));
+    if (payload && payload.next && payload.next.always) {
+      window.location.href = payload.next.always;
     } else {
-      console.error('[XAMAN] No redirect URL in sub.created:', sub);
+      console.error('[XAMAN] No redirect URL:', payload);
     }
-
   } catch(e) {
     console.error('[XAMAN] connect error:', e);
   }
