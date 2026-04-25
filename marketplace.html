@@ -919,24 +919,34 @@ async function redeemOrder(orderId) {
  <script>
 async function xamanConnect(){
   try {
-    const xumm = window.xumm;
-
-    const sub = await xumm.payload.createAndSubscribe({
-      txjson: { TransactionType: 'SignIn', SignIn: true },
+    console.log('[XAMAN] Button clicked');
+    if(!window.xumm || !window.xumm.payload){
+      console.error('[XAMAN] window.xumm not ready:', window.xumm);
+      return;
+    }
+    console.log('[XAMAN] Calling createAndSubscribe...');
+    const sub = await window.xumm.payload.createAndSubscribe({
+      txjson: { TransactionType: 'SignIn' },
       options: {
         return_url: {
-          web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
-          app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
+          web: location.href,
+          app: location.href
         }
       }
     }, function(){});
 
-    if (sub?.created?.next?.always) {
+    console.log('[XAMAN] sub result:', JSON.stringify(sub));
+    console.log('[XAMAN] sub.created:', sub && sub.created);
+    console.log('[XAMAN] next.always:', sub && sub.created && sub.created.next && sub.created.next.always);
+
+    if (sub && sub.created && sub.created.next && sub.created.next.always) {
       window.location.href = sub.created.next.always;
+    } else {
+      console.error('[XAMAN] No redirect URL in sub.created:', sub);
     }
 
   } catch(e) {
-    console.error('Xaman connect error:', e);
+    console.error('[XAMAN] connect error:', e);
   }
 }
 
