@@ -928,8 +928,8 @@ async function xamanConnect(){
       console.error('[XAMAN] window.xumm not ready');
       return;
     }
-    console.log('[XAMAN] Calling createAndSubscribe...');
-    const sub = await window.xumm.payload.createAndSubscribe({
+    console.log('[XAMAN] Calling create...');
+const sub = await window.xumm.payload.create({
       txjson: { TransactionType: 'SignIn' },
       options: {
         return_url: {
@@ -937,11 +937,12 @@ async function xamanConnect(){
           app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
         }
       }
-    }, function(){});
+});
     console.log('[XAMAN] sub:', JSON.stringify(sub && sub.created ? sub.created.uuid : 'no uuid'));
-    if (sub && sub.created && sub.created.next && sub.created.next.always) {
-      window.location.href = sub.created.next.always;
-    } else {
+   if (sub && sub.next && sub.next.always) {
+  window.location.href = sub.next.always;
+}
+    else {
       console.error('[XAMAN] No redirect URL in sub:', sub);
     }
   } catch(e) {
