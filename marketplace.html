@@ -933,19 +933,24 @@ async function xamanConnect(){
 
     console.log('[XAMAN] Calling authorize...');
    const result = await window.xumm.authorize();
+    if (result && result.me && result.me.account) {
+  const account = result.me.account;
 
-console.log('[XAMAN] result:', result);
+  // store it
+  window.connectedWallet = account;
+  localStorage.setItem('cfcWallet', account);
 
-if (result && result.me && result.me.account) {
-  console.log('[XAMAN] Logged in:', result.me.account);
+  // 👉 UPDATE UI
+  const btn = document.querySelector('[onclick="xamanConnect()"]');
+  if (btn) btn.innerText = 'Disconnect';
 
-  // 👉 store wallet
-  window.connectedWallet = result.me.account;
-  localStorage.setItem('cfcWallet', result.me.account);
+  const addrBar = document.getElementById('wallet-address');
+  if (addrBar) {
+    addrBar.style.display = 'block';
+    addrBar.innerText = account;
+  }
 
-  // 👉 OPTIONAL: update UI here
-} else {
-  console.log('[XAMAN] Login cancelled or failed');
+  console.log('[XAMAN] UI updated');
 }
 
   } catch(e) {
