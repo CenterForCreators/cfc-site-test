@@ -919,38 +919,26 @@ async function redeemOrder(orderId) {
  <script>
 async function xamanConnect(){
   if (!window.xumm) {
-  console.log('[XAMAN] not ready yet');
-  return;
-}
+    console.log('[XAMAN] not ready yet');
+    return;
+  }
+
   try {
     console.log('[XAMAN] Button clicked');
-    if(!window.xumm || !window.xumm.payload){
+
+    if(!window.xumm){
       console.error('[XAMAN] window.xumm not ready');
       return;
     }
-    console.log('[XAMAN] Calling create...');
-const sub = await window.xumm.payload.create({
-      txjson: { TransactionType: 'SignIn' },
-      options: {
-        return_url: {
-          web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
-          app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
-        }
-      }
-});
-    console.log('[XAMAN] sub:', JSON.stringify(sub && sub.created ? sub.created.uuid : 'no uuid'));
-   if (sub && sub.next && sub.next.always) {
-  window.location.href = sub.next.always;
-}
-    else {
-      console.error('[XAMAN] No redirect URL in sub:', sub);
-    }
+
+    console.log('[XAMAN] Calling authorize...');
+    await window.xumm.authorize();
+
   } catch(e) {
     console.error('[XAMAN] connect error:', e);
   }
 }
-
-window.xamanConnect = xamanConnect;
+   window.xamanConnect = xamanConnect;
 </script>
 </body>
 </html>
