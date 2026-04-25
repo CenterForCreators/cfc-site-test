@@ -234,7 +234,7 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
   <script src="https://xumm.app/assets/cdn/xumm.min.js"></script>
 
 <script>
-  window.xumm = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
+  window.xumm = new Xumm('ffa83df2-e68d-4172-a77c-e7af7e5274ea');
 
   // Capture wallet on return from Xaman
   if(window.xumm && window.xumm.on){
@@ -924,21 +924,21 @@ async function xamanConnect(){
       console.error('[XAMAN] window.xumm not ready');
       return;
     }
-    console.log('[XAMAN] Creating payload...');
-    const payload = await window.xumm.payload.create({
+    console.log('[XAMAN] Calling createAndSubscribe...');
+    const sub = await window.xumm.payload.createAndSubscribe({
       txjson: { TransactionType: 'SignIn' },
       options: {
         return_url: {
-          web: location.href,
-          app: location.href
+          web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
+          app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
         }
       }
-    });
-    console.log('[XAMAN] payload:', JSON.stringify(payload));
-    if (payload && payload.next && payload.next.always) {
-      window.location.href = payload.next.always;
+    }, function(){});
+    console.log('[XAMAN] sub:', JSON.stringify(sub && sub.created ? sub.created.uuid : 'no uuid'));
+    if (sub && sub.created && sub.created.next && sub.created.next.always) {
+      window.location.href = sub.created.next.always;
     } else {
-      console.error('[XAMAN] No redirect URL:', payload);
+      console.error('[XAMAN] No redirect URL in sub:', sub);
     }
   } catch(e) {
     console.error('[XAMAN] connect error:', e);
