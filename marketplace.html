@@ -932,7 +932,21 @@ async function xamanConnect(){
     }
 
     console.log('[XAMAN] Calling authorize...');
-    await window.xumm.authorize();
+   const result = await window.xumm.authorize();
+
+console.log('[XAMAN] result:', result);
+
+if (result && result.me && result.me.account) {
+  console.log('[XAMAN] Logged in:', result.me.account);
+
+  // 👉 store wallet
+  window.connectedWallet = result.me.account;
+  localStorage.setItem('cfcWallet', result.me.account);
+
+  // 👉 OPTIONAL: update UI here
+} else {
+  console.log('[XAMAN] Login cancelled or failed');
+}
 
   } catch(e) {
     console.error('[XAMAN] connect error:', e);
