@@ -253,18 +253,7 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
 </script>
 </head>
 <body>
-<div id="wallet-address" style="
-  display:none;
-  position:absolute;
-  left:20px;
-  top:20px;
-  font-size:1.2rem;
-  font-weight:600;
-  font-family:inherit;
-">
-  <span style="color:#1E90FF;">Connected:</span>
-  <span id="wallet-value" style="color:#63B3FF;"></span>
-</div>
+
 <canvas id="canvas"></canvas>
 
 <!-- NAV -->
@@ -958,7 +947,7 @@ async function xamanConnect(){
   const addrBar = document.getElementById('wallet-address');
   if (addrBar) {
     addrBar.style.display = 'block';
-    document.getElementById('wallet-value').innerText = account;
+    addrBar.innerText = account;
   }
 
   console.log('[XAMAN] UI updated');
