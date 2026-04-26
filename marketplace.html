@@ -918,19 +918,6 @@ async function redeemOrder(orderId) {
 </script>
  <script>
 async function xamanConnect(){
-  if (window.connectedWallet) {
-  await window.xumm.logout();
-  window.connectedWallet = null;
-  localStorage.removeItem('cfcWallet');
-
-  const addrBar = document.getElementById('wallet-address');
-  if (addrBar) addrBar.style.display = 'none';
-
-  const btn = document.querySelector('[onclick="xamanConnect()"]');
-  if (btn) btn.innerText = 'Connect Wallet';
-
-  return;
-}
   if (!window.xumm) {
     console.log('[XAMAN] not ready yet');
     return;
@@ -952,7 +939,6 @@ async function xamanConnect(){
   // store it
   window.connectedWallet = account;
   localStorage.setItem('cfcWallet', account);
-     setConnected(account); 
 
   // 👉 UPDATE UI
   const btn = document.querySelector('[onclick="xamanConnect()"]');
@@ -961,7 +947,7 @@ async function xamanConnect(){
   const addrBar = document.getElementById('wallet-address');
   if (addrBar) {
     addrBar.style.display = 'block';
-   addrBar.innerText = account;
+    addrBar.innerText = account;
   }
 
   console.log('[XAMAN] UI updated');
