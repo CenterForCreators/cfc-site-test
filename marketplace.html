@@ -75,7 +75,7 @@ nav { position:fixed; top:0; left:0; right:0; z-index:1000; display:flex; align-
 .mh-stat-label { font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.05em; margin-top:0.15rem; }
 
 /* WALLET BANNER */
-#wallet-banner { padding:1.2rem 2.5rem; background:linear-gradient(90deg,rgba(124,58,237,0.06),rgba(240,180,41,0.06)); border-top:1px solid rgba(124,58,237,0.15); border-bottom:1px solid rgba(240,180,41,0.1); display:flex; align-items:center; justify-content:center; gap:1.5rem; flex-wrap:wrap; text-align:center; }
+#wallet-banner { padding:1.2rem 2.5rem; background:rgba(5,12,35,0.97); border-top:1px solid rgba(16,185,129,0.2); border-bottom:2px solid rgba(16,185,129,0.45); display:flex; align-items:center; justify-content:center; gap:1.5rem; flex-wrap:wrap; text-align:center; }
 #wallet-banner.hidden { display:none; }
 .wallet-banner-text { color:var(--text-muted); font-size:0.92rem; }
 .wallet-addr-display { display:none; align-items:center; gap:0.75rem; font-size:0.85rem; background:rgba(240,180,41,0.06); border:1px solid rgba(240,180,41,0.2); padding:0.4rem 1rem; border-radius:8px; color:var(--gold); }
@@ -318,8 +318,8 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
     <button onclick="xamanConnect()" style="background:linear-gradient(135deg,#B8860B,#FFD700);color:#0C0C1D;font-weight:700;font-size:1rem;padding:0.65rem 2rem;border:none;border-radius:10px;cursor:pointer;font-family:inherit;box-shadow:0 0 18px rgba(255,215,0,0.45);transition:all 0.2s;">&#128279; Connect Wallet</button>
   </div>
   <!-- Connected state -->
-  <div id="banner-connected" style="display:none;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;">
-    <span id="wallet-addr-text" style="color:var(--gold);font-size:0.88rem;"></span>
+  <div id="banner-connected" style="display:none;align-items:center;justify-content:flex-start;gap:1rem;flex-wrap:wrap;width:100%;padding-left:0.5rem;">
+    <span id="wallet-addr-text" style="font-size:1.1rem;"></span>
     <span class="bal-pill xrp-pill">XRP <span id="xrp-bal">--</span></span>
     <span class="bal-pill cfc-pill">CFC <span id="cfc-bal">--</span></span>
     <button onclick="disconnectWallet()" style="background:transparent;border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:8px;padding:0.3rem 0.9rem;cursor:pointer;font-size:0.8rem;font-family:inherit;">Disconnect</button>
@@ -535,7 +535,7 @@ function updateWalletUI(){
   const addrText = document.getElementById('wallet-addr-text');
   if(connectedWallet){
     const short = connectedWallet.slice(0,8)+'...'+connectedWallet.slice(-4);
-    addrText.textContent = 'Connected: '+short;
+    addrText.innerHTML = '<span style="color:#38BDF8;font-weight:700;">Connected:</span> <span style="color:#7DD3FC;">' + short + '</span>';
     connected.style.display = 'flex';
     disconnected.style.display = 'none';
     document.getElementById('my-orders').style.display = 'block';
