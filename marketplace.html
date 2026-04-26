@@ -75,9 +75,8 @@ nav { position:fixed; top:0; left:0; right:0; z-index:1000; display:flex; align-
 .mh-stat-label { font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.05em; margin-top:0.15rem; }
 
 /* WALLET BANNER */
-#wallet-banner { padding:1.2rem 2.5rem; background:rgba(5,12,35,0.97); border-top:1px solid rgba(16,185,129,0.2); border-bottom:2px solid rgba(16,185,129,0.45); display:flex; align-items:center; justify-content:center; gap:1.5rem; flex-wrap:wrap; text-align:center; }
+#wallet-banner { padding:1.2rem 2.5rem; background:linear-gradient(90deg,rgba(124,58,237,0.06),rgba(240,180,41,0.06)); border-top:1px solid rgba(124,58,237,0.15); border-bottom:1px solid rgba(240,180,41,0.1); display:flex; align-items:center; justify-content:center; gap:1.5rem; flex-wrap:wrap; text-align:center; }
 #wallet-banner.hidden { display:none; }
-#xrp-bal, #cfc-bal { opacity:0.55; }
 .wallet-banner-text { color:var(--text-muted); font-size:0.92rem; }
 .wallet-addr-display { display:none; align-items:center; gap:0.75rem; font-size:0.85rem; background:rgba(240,180,41,0.06); border:1px solid rgba(240,180,41,0.2); padding:0.4rem 1rem; border-radius:8px; color:var(--gold); }
 
@@ -232,26 +231,7 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
   .modal-box { padding:1.5rem; }
 }
 </style>
- <script src="https://xumm.app/assets/cdn/xumm.min.js"></script>
-<script>
-  window.xumm = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
-  console.log('[XAMAN] initialized');
-</script> 
-  // Capture wallet on return from Xaman
-  if(window.xumm && window.xumm.on){
-    window.xumm.on('ready', () => {
-      try{ if(window.xumm.user && window.xumm.user.account) setConnected(window.xumm.user.account); }catch(e){}
-    });
-    window.xumm.on('success', (e) => {
-      const acc = (e && e.me && e.me.account) ? e.me.account : (e && e.account ? e.account : null);
-      if(acc) setConnected(acc);
-    });
-    window.xumm.on('retrieved', (e) => {
-      const acc = (e && e.me && e.me.account) ? e.me.account : (e && e.account ? e.account : null);
-      if(acc) setConnected(acc);
-    });
-  }
-</script>
+  <script src="https://xumm.app/assets/cdn/xumm.min.js"></script>
 </head>
 <body>
 
@@ -319,8 +299,8 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
     <button onclick="xamanConnect()" style="background:linear-gradient(135deg,#B8860B,#FFD700);color:#0C0C1D;font-weight:700;font-size:1rem;padding:0.65rem 2rem;border:none;border-radius:10px;cursor:pointer;font-family:inherit;box-shadow:0 0 18px rgba(255,215,0,0.45);transition:all 0.2s;">&#128279; Connect Wallet</button>
   </div>
   <!-- Connected state -->
-  <div id="banner-connected" style="display:none;align-items:center;justify-content:flex-start;gap:1rem;flex-wrap:wrap;width:100%;padding-left:0.5rem;">
-    <span style="color:#7DD3FC;font-size:1.1rem;font-weight:700;">Connected:</span> <span id="wallet-addr-text" style="color:#4A90B8;font-size:1.1rem;font-weight:600;"></span>
+  <div id="banner-connected" style="display:none;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;">
+    <span id="wallet-addr-text" style="color:var(--gold);font-size:0.88rem;"></span>
     <span class="bal-pill xrp-pill">XRP <span id="xrp-bal">--</span></span>
     <span class="bal-pill cfc-pill">CFC <span id="cfc-bal">--</span></span>
     <button onclick="disconnectWallet()" style="background:transparent;border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:8px;padding:0.3rem 0.9rem;cursor:pointer;font-size:0.8rem;font-family:inherit;">Disconnect</button>
@@ -521,6 +501,44 @@ function loadWallet(){
   }
 }
 
+// XAMAN wallet connect via SDK
+let xummInstance = null;
+function getXumm(){
+  if(!xummInstance) xummInstance = new Xumm('ffa83df2-e68d-4172-a77c-e7af7e5274ea');
+  return xummInstance;
+}
+
+async function xamanConnect(){
+  try {
+    const xumm = getXumm();
+    // Show a connecting indicator
+    const btn = document.querySelector('#banner-disconnected button');
+    if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
+    await xumm.authorize();
+    const account = await xumm.user.account;
+    if(account){
+      connectedWallet = account;
+      localStorage.setItem('cfcWallet', account);
+      updateWalletUI();
+      fetchBalances(account);
+      loadOrders();
+    } else {
+      if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
+    }
+  } catch(e) {
+    console.error('Xaman connect error:', e);
+    const btn = document.querySelector('#banner-disconnected button');
+    if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
+  }
+}
+
+// Keep openWalletModal as alias for backwards compat
+function openWalletModal(){ xamanConnect(); }
+
+function connectWallet(){
+  // legacy — not used
+}
+
 function disconnectWallet(){
   connectedWallet = null;
   localStorage.removeItem('cfcWallet');
@@ -536,7 +554,7 @@ function updateWalletUI(){
   const addrText = document.getElementById('wallet-addr-text');
   if(connectedWallet){
     const short = connectedWallet.slice(0,8)+'...'+connectedWallet.slice(-4);
-    addrText.textContent = short;
+    addrText.textContent = 'Connected: '+short;
     connected.style.display = 'flex';
     disconnected.style.display = 'none';
     document.getElementById('my-orders').style.display = 'block';
@@ -916,64 +934,7 @@ async function redeemOrder(orderId) {
     else alert(d.error || 'Redeem failed.');
   } catch(e) { alert('Error: ' + e.message); }
 }
-</script>
- <script>
-async function xamanConnect(){
-  if (window.connectedWallet) {
-  await window.xumm.logout();
-  window.connectedWallet = null;
-  localStorage.removeItem('cfcWallet');
 
-  const addrBar = document.getElementById('wallet-address');
-  if (addrBar) addrBar.style.display = 'none';
-
-  const btn = document.querySelector('[onclick="xamanConnect()"]');
-  if (btn) btn.innerText = 'Connect Wallet';
-
-  return;
-}
-  if (!window.xumm) {
-    console.log('[XAMAN] not ready yet');
-    return;
-  }
-
-  try {
-    console.log('[XAMAN] Button clicked');
-
-    if(!window.xumm){
-      console.error('[XAMAN] window.xumm not ready');
-      return;
-    }
-
-    console.log('[XAMAN] Calling authorize...');
-   const result = await window.xumm.authorize();
-    if (result && result.me && result.me.account) {
-  const account = result.me.account;
-
-  // store it
- window.connectedWallet = account;
-localStorage.setItem('cfcWallet', account);
-
-location.reload();
-     
-  // 👉 UPDATE UI
-  const btn = document.querySelector('[onclick="xamanConnect()"]');
-  if (btn) btn.innerText = 'Disconnect';
-
-  const addrBar = document.getElementById('wallet-address');
-  if (addrBar) {
-    addrBar.style.display = 'block';
-   addrBar.innerText = account;
-  }
-
-  console.log('[XAMAN] UI updated');
-}
-
-  } catch(e) {
-    console.error('[XAMAN] connect error:', e);
-  }
-}
-   window.xamanConnect = xamanConnect;
 </script>
 </body>
 </html>
