@@ -953,6 +953,9 @@ async function xamanConnect(){
   // store it
   window.connectedWallet = account;
   localStorage.setItem('cfcWallet', account);
+      updateWalletUI();
+fetchBalances(account);
+loadOrders();
      
   // 👉 UPDATE UI
   const btn = document.querySelector('[onclick="xamanConnect()"]');
