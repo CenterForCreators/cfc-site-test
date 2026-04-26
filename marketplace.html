@@ -320,8 +320,8 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
   <!-- Connected state -->
   <div id="banner-connected" style="display:none;align-items:center;justify-content:flex-start;gap:1rem;flex-wrap:wrap;width:100%;padding-left:0.5rem;">
     <span style="color:#4A90B8;font-size:1.1rem;font-weight:700;">Connected:</span> <span id="wallet-addr-text" style="color:#7DD3FC;font-size:1.1rem;font-weight:600;"></span>
-    <span class="bal-pill xrp-pill">XRP <span id="xrp-bal">--</span></span>
-    <span class="bal-pill cfc-pill">CFC <span id="cfc-bal">--</span></span>
+    <span class="bal-pill xrp-pill"><span style="opacity:0.55;">XRP</span> <span id="xrp-bal">--</span></span>
+    <span class="bal-pill cfc-pill"><span style="opacity:0.55;">CFC</span> <span id="cfc-bal">--</span></span>
     <button onclick="disconnectWallet()" style="background:transparent;border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:8px;padding:0.3rem 0.9rem;cursor:pointer;font-size:0.8rem;font-family:inherit;">Disconnect</button>
   </div>
   <div class="wallet-addr-display" id="wallet-addr-display" style="display:none;">
