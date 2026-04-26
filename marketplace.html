@@ -319,7 +319,7 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
   </div>
   <!-- Connected state -->
   <div id="banner-connected" style="display:none;align-items:center;justify-content:flex-start;gap:1rem;flex-wrap:wrap;width:100%;padding-left:0.5rem;">
-    <span id="wallet-addr-text" style="color:#7DD3FC;font-size:1.1rem;font-weight:600;"></span>
+    <span style="color:#4A90B8;font-size:1.1rem;font-weight:700;">Connected:</span> <span id="wallet-addr-text" style="color:#7DD3FC;font-size:1.1rem;font-weight:600;"></span>
     <span class="bal-pill xrp-pill">XRP <span id="xrp-bal">--</span></span>
     <span class="bal-pill cfc-pill">CFC <span id="cfc-bal">--</span></span>
     <button onclick="disconnectWallet()" style="background:transparent;border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:8px;padding:0.3rem 0.9rem;cursor:pointer;font-size:0.8rem;font-family:inherit;">Disconnect</button>
@@ -535,7 +535,7 @@ function updateWalletUI(){
   const addrText = document.getElementById('wallet-addr-text');
   if(connectedWallet){
     const short = connectedWallet.slice(0,8)+'...'+connectedWallet.slice(-4);
-    addrText.textContent = 'Connected: '+short;
+    addrText.textContent = short;
     connected.style.display = 'flex';
     disconnected.style.display = 'none';
     document.getElementById('my-orders').style.display = 'block';
@@ -918,6 +918,19 @@ async function redeemOrder(orderId) {
 </script>
  <script>
 async function xamanConnect(){
+  if (window.connectedWallet) {
+  await window.xumm.logout();
+  window.connectedWallet = null;
+  localStorage.removeItem('cfcWallet');
+
+  const addrBar = document.getElementById('wallet-address');
+  if (addrBar) addrBar.style.display = 'none';
+
+  const btn = document.querySelector('[onclick="xamanConnect()"]');
+  if (btn) btn.innerText = 'Connect Wallet';
+
+  return;
+}
   if (!window.xumm) {
     console.log('[XAMAN] not ready yet');
     return;
@@ -939,6 +952,7 @@ async function xamanConnect(){
   // store it
   window.connectedWallet = account;
   localStorage.setItem('cfcWallet', account);
+     setConnected(account); 
 
   // 👉 UPDATE UI
   const btn = document.querySelector('[onclick="xamanConnect()"]');
@@ -947,7 +961,7 @@ async function xamanConnect(){
   const addrBar = document.getElementById('wallet-address');
   if (addrBar) {
     addrBar.style.display = 'block';
-    addrBar.innerText = account;
+   addrBar.innerText = account;
   }
 
   console.log('[XAMAN] UI updated');
