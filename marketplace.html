@@ -953,8 +953,7 @@ async function xamanConnect(){
   // store it
   window.connectedWallet = account;
   localStorage.setItem('cfcWallet', account);
-      location.reload();
-
+     
   // 👉 UPDATE UI
   const btn = document.querySelector('[onclick="xamanConnect()"]');
   if (btn) btn.innerText = 'Disconnect';
