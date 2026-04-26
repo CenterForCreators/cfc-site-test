@@ -960,7 +960,7 @@ async function xamanConnect(){
   const addrBar = document.getElementById('wallet-address');
   if (addrBar) {
     addrBar.style.display = 'block';
-    document.getElementById('wallet-value').innerText = account;
+   addrBar.innerText = account;
   }
 
   console.log('[XAMAN] UI updated');
