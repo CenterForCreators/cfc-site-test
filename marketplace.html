@@ -909,23 +909,24 @@ function getXumm(){
 async function xamanConnect(){
   try {
     const xumm = getXumm();
-
+    // Show a connecting indicator
     const btn = document.querySelector('#banner-disconnected button');
     if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
-
     await xumm.authorize();
     const account = await xumm.user.account;
-
     if(account){
       connectedWallet = account;
       localStorage.setItem('cfcWallet', account);
       updateWalletUI();
       fetchBalances(account);
       loadOrders();
+    } else {
+      if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
     }
-
   } catch(e) {
     console.error('Xaman connect error:', e);
+    const btn = document.querySelector('#banner-disconnected button');
+    if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
   }
 }
 </script>
