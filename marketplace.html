@@ -507,6 +507,8 @@ function disconnectWallet(){
   localStorage.removeItem('cfcWallet');
   document.getElementById('xrp-bal').textContent = '--';
   document.getElementById('cfc-bal').textContent = '--';
+  const _btn = document.querySelector('#banner-disconnected button');
+  if(_btn){ _btn.textContent = '🔗 Connect Wallet'; _btn.disabled = false; }
   updateWalletUI();
   document.getElementById('my-orders').style.display = 'none';
 }
@@ -917,11 +919,12 @@ async function xamanConnect(){
     if(account){
       connectedWallet = account;
       localStorage.setItem('cfcWallet', account);
+      if(btn){ btn.textContent = '🔗 Connect Wallet'; btn.disabled = false; }
       updateWalletUI();
       fetchBalances(account);
       loadOrders();
     } else {
-      if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
+      if(btn){ btn.textContent = '🔗 Connect Wallet'; btn.disabled = false; }
     }
   } catch(e) {
     console.error('Xaman connect error:', e);
