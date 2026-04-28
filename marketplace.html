@@ -296,14 +296,14 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
 <div id="wallet-banner">
   <!-- Disconnected state -->
   <div id="banner-disconnected" style="display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;">
-    <button onclick="xamanConnect()" style="background:linear-gradient(135deg,#B8860B,#FFD700);color:#0C0C1D;font-weight:700;font-size:1rem;padding:0.65rem 2rem;border:none;border-radius:10px;cursor:pointer;font-family:inherit;box-shadow:0 0 18px rgba(255,215,0,0.45);transition:all 0.2s;">&#128279; Connect Wallet</button>
+    <button onclick="connectToggle()" style="background:linear-gradient(135deg,#B8860B,#FFD700);color:#0C0C1D;font-weight:700;font-size:1rem;padding:0.65rem 2rem;border:none;border-radius:10px;cursor:pointer;font-family:inherit;box-shadow:0 0 18px rgba(255,215,0,0.45);transition:all 0.2s;">&#128279; Connect Wallet</button>
   </div>
   <!-- Connected state -->
   <div id="banner-connected" style="display:none;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;">
     <span id="wallet-addr-text" style="color:var(--gold);font-size:0.88rem;"></span>
     <span class="bal-pill xrp-pill">XRP <span id="xrp-bal">--</span></span>
     <span class="bal-pill cfc-pill">CFC <span id="cfc-bal">--</span></span>
-    <button onclick="disconnectWallet()" style="background:transparent;border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:8px;padding:0.3rem 0.9rem;cursor:pointer;font-size:0.8rem;font-family:inherit;">Disconnect</button>
+    <button onclick="connectToggle()" style="background:transparent;border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:8px;padding:0.3rem 0.9rem;cursor:pointer;font-size:0.8rem;font-family:inherit;">Disconnect</button>
   </div>
   <div class="wallet-addr-display" id="wallet-addr-display" style="display:none;">
   </div>
@@ -508,34 +508,16 @@ function getXumm(){
   return xummInstance;
 }
 
-async function connect(){
-  try{
-    const sub = await xumm.payload.createAndSubscribe({
-      txjson: { TransactionType: 'SignIn' },
-      options: {
-        return_url: {
-          web: 'https://centerforcreators.com/nft-marketplace',
-          app: 'https://centerforcreators.com/nft-marketplace'
-        } else {
-      if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
-    }
-  } catch(e) {
-    console.error('Xaman connect error:', e);
-    const btn = document.querySelector('#banner-disconnected button');
-    if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
-  }
-}
-
-// Keep openWalletModal as alias for backwards compat
-function openWalletModal(){ xamanConnect(); }
-
-function connectWallet(){
-  // legacy — not used
-}
-
-function disconnectWallet() {
-    (async function() {
-      try{ localStorage.removeItem('xummAccount'); }catch(e){}
+  function connectToggle(){
+    var btn = gid('connect-wallet') || gid('connectXumm') || gid('xummConnect') || gid('connectBtn');
+    if (!btn) return;
+    var clone = btn.cloneNode(true);
+    btn.parentNode.replaceChild(clone, btn);
+    clone.addEventListener('click', async function(e){
+      e.preventDefault();
+      var a = acct();
+      if (isR(a)){
+        try{ localStorage.removeItem('xummAccount'); }catch(e){}
         if (typeof window.connectedAccount !== 'undefined') window.connectedAccount = null;
         updateWallet();
         return;
@@ -576,21 +558,10 @@ function disconnectWallet() {
           alert('XUMM SDK not loaded.');
         }
       }catch(_){ alert('Wallet connection failed.'); }
-    })();
-  }catch(e){}
-  connectedWallet = null;
-  localStorage.removeItem('cfcWallet');
-  document.getElementById('xrp-bal').textContent = '--';
-  document.getElementById('cfc-bal').textContent = '--';
-  updateWalletUI();
-  document.getElementById('my-orders').style.display = 'none';
-  const btn = document.querySelector('#banner-disconnected button');
-  if(btn && btn.parentNode){
-    const clone = btn.cloneNode(true);
-    clone.onclick = xamanConnect;
-    btn.parentNode.replaceChild(clone, btn);
+    });
   }
-}
+
+
 
 function updateWalletUI(){
   const connected = document.getElementById('banner-connected');
