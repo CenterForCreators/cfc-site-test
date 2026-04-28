@@ -508,37 +508,7 @@ function getXumm(){
   return xummInstance;
 }
 
-async function xamanConnect(){
-  try {
-    const xumm = getXumm();
-    const btn = document.querySelector('#banner-disconnected button');
-    if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
-    
-    const sub = await xumm.payload.createAndSubscribe({
-      txjson: { TransactionType: 'SignIn' },
-      options: {
-        return_url: {
-          web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
-          app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
-        }
-      }
-    }, function(){});
 
-    const res = await sub.resolved;
-    if (res?.signed && res?.response?.account){
-      connectedWallet = res.response.account;
-      localStorage.setItem('cfcWallet', connectedWallet);
-      updateWalletUI();
-      fetchBalances(connectedWallet);
-      loadOrders();
-    } else {
-      if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
-    }
-  } catch(e) {
-    console.error('Xaman connect error:', e);
-    const btn = document.querySelector('#banner-disconnected button');
-    if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
-  }
 }
 
 // Keep openWalletModal as alias for backwards compat
@@ -548,22 +518,7 @@ function connectWallet(){
   // legacy — not used
 }
 
-function disconnectWallet(){
-  try{ if(window.xumm && typeof window.xumm.logout === 'function') window.xumm.logout(); }catch(e){}
-  connectedWallet = null;
-  localStorage.removeItem('cfcWallet');
-  document.getElementById('xrp-bal').textContent = '--';
-  document.getElementById('cfc-bal').textContent = '--';
-  updateWalletUI();
-  document.getElementById('my-orders').style.display = 'none';
-  const btn = document.querySelector('#banner-disconnected button');
-  if(btn && btn.parentNode){
-    const clone = btn.cloneNode(true);
-    clone.onclick = xamanConnect;
-    clone.textContent = 'Connect Wallet';
-    btn.parentNode.replaceChild(clone, btn);
-  }
-}
+
 
 function updateWalletUI(){
   const connected = document.getElementById('banner-connected');
