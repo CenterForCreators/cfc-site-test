@@ -491,6 +491,15 @@ revealEls.forEach(el=>obs.observe(el));
 // ── WALLET ──
 let connectedWallet = null;
 
+// Ensure XUMM SDK is initialized with correct key
+if(!window.xumm && typeof Xumm !== 'undefined'){
+  try{
+    window.xumm = new Xumm('ffa83df2-e68d-4172-a77c-e7af7e5274ea');
+  }catch(e){
+    console.error('Failed to initialize Xumm:', e);
+  }
+}
+
 function loadWallet(){
   const saved = localStorage.getItem('cfcWallet');
   if(saved && saved.startsWith('r') && saved.length >= 25){
@@ -501,43 +510,44 @@ function loadWallet(){
   }
 }
 
-// XAMAN wallet connect via SDK
-let xummInstance = null;
-function getXumm(){
-  if(!xummInstance) xummInstance = new Xumm('ffa83df2-e68d-4172-a77c-e7af7e5274ea');
-  return xummInstance;
-}
-
+// XAMAN wallet connect via SDK (uses global window.xumm from CDN)
 async function xamanConnect(){
-  try {
-    const xumm = getXumm();
-    const btn = document.querySelector('#banner-disconnected button');
-    if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
-    
-    const sub = await xumm.payload.createAndSubscribe({
-      txjson: { TransactionType: 'SignIn' },
-      options: {
-        return_url: {
-          web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
-          app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
-        }
-      }
+  try{
+    if(!window.xumm || !window.xumm.payload){
+      return;
+    }
+
+    const sub = await window.xumm.payload.createAndSubscribe({
+      txjson: { TransactionType: 'SignIn', SignIn: true },
+      options: { return_url: { web: location.href, app: location.href } }
     }, function(){});
 
-    const res = await sub.resolved;
-    if (res?.signed && res?.response?.account){
-      connectedWallet = res.response.account;
-      localStorage.setItem('cfcWallet', connectedWallet);
-      updateWalletUI();
-      fetchBalances(connectedWallet);
-      loadOrders();
-    } else {
-      if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
+    if (sub?.created?.next?.always){
+      const link = sub.created.next.always;
+      const ua = navigator.userAgent || '';
+      const isLinkedIn = ua.includes('LinkedIn');
+      if (isLinkedIn) {
+        window.open(link, '_blank');
+      } else {
+        window.location.href = link;
+      }
     }
-  } catch(e) {
-    console.error('Xaman connect error:', e);
-    const btn = document.querySelector('#banner-disconnected button');
-    if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
+
+    const res = await sub.resolved;
+    const acct = res?.signed ? (res?.response?.account || null) : null;
+
+    if(!acct){
+      return;
+    }
+
+    connectedWallet = acct;
+    localStorage.setItem('cfcWallet', acct);
+    updateWalletUI();
+    fetchBalances(acct);
+    loadOrders();
+
+  }catch(e){
+    console.error('Xaman connect error', e);
   }
 }
 
@@ -549,20 +559,12 @@ function connectWallet(){
 }
 
 function disconnectWallet(){
-  try{ if(window.xumm && typeof window.xumm.logout === 'function') window.xumm.logout(); }catch(e){}
   connectedWallet = null;
   localStorage.removeItem('cfcWallet');
   document.getElementById('xrp-bal').textContent = '--';
   document.getElementById('cfc-bal').textContent = '--';
   updateWalletUI();
   document.getElementById('my-orders').style.display = 'none';
-  const btn = document.querySelector('#banner-disconnected button');
-  if(btn && btn.parentNode){
-    const clone = btn.cloneNode(true);
-    clone.onclick = xamanConnect;
-    clone.textContent = 'Connect Wallet';
-    btn.parentNode.replaceChild(clone, btn);
-  }
 }
 
 function updateWalletUI(){
@@ -615,11 +617,11 @@ async function claimFaucet(){
   try {
     const r = await fetch('https://cfc-nft-shared-mint-backend.onrender.com/api/faucet-claim', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({wallet: connectedWallet})
+      body: JSON.stringify({wallet: connectedWallet, submission_id: 1})
     });
     const d = await r.json();
-    if(r.ok && (d.success || d.ok)){
-      msg.textContent = '25 CFC sent to your wallet! Check back in 24 hours';
+    if(d && d.ok){
+      msg.textContent = '✓ 25 CFC sent to your wallet! Check back tomorrow for more.';
       msg.style.color = 'var(--green)';
       setTimeout(()=>fetchBalances(connectedWallet), 3000);
     } else {
