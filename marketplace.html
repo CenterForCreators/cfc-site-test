@@ -491,15 +491,6 @@ revealEls.forEach(el=>obs.observe(el));
 // ── WALLET ──
 let connectedWallet = null;
 
-// Ensure XUMM SDK is initialized with correct key
-if(!window.xumm && typeof Xumm !== 'undefined'){
-  try{
-    window.xumm = new Xumm('ffa83df2-e68d-4172-a77c-e7af7e5274ea');
-  }catch(e){
-    console.error('Failed to initialize Xumm:', e);
-  }
-}
-
 function loadWallet(){
   const saved = localStorage.getItem('cfcWallet');
   if(saved && saved.startsWith('r') && saved.length >= 25){
@@ -510,44 +501,34 @@ function loadWallet(){
   }
 }
 
-// XAMAN wallet connect via SDK (uses global window.xumm from CDN)
+// XAMAN wallet connect via SDK
+let xummInstance = null;
+function getXumm(){
+  if(!xummInstance) xummInstance = new Xumm('ffa83df2-e68d-4172-a77c-e7af7e5274ea');
+  return xummInstance;
+}
+
 async function xamanConnect(){
-  try{
-    if(!window.xumm || !window.xumm.payload){
-      return;
+  try {
+    const xumm = getXumm();
+    // Show a connecting indicator
+    const btn = document.querySelector('#banner-disconnected button');
+    if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
+    await xumm.authorize();
+    const account = await xumm.user.account;
+    if(account){
+      connectedWallet = account;
+      localStorage.setItem('cfcWallet', account);
+      updateWalletUI();
+      fetchBalances(account);
+      loadOrders();
+    } else {
+      if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
     }
-
-    const sub = await window.xumm.payload.createAndSubscribe({
-      txjson: { TransactionType: 'SignIn', SignIn: true },
-      options: { return_url: { web: location.href, app: location.href } }
-    }, function(){});
-
-    if (sub?.created?.next?.always){
-      const link = sub.created.next.always;
-      const ua = navigator.userAgent || '';
-      const isLinkedIn = ua.includes('LinkedIn');
-      if (isLinkedIn) {
-        window.open(link, '_blank');
-      } else {
-        window.location.href = link;
-      }
-    }
-
-    const res = await sub.resolved;
-    const acct = res?.signed ? (res?.response?.account || null) : null;
-
-    if(!acct){
-      return;
-    }
-
-    connectedWallet = acct;
-    localStorage.setItem('cfcWallet', acct);
-    updateWalletUI();
-    fetchBalances(acct);
-    loadOrders();
-
-  }catch(e){
-    console.error('Xaman connect error', e);
+  } catch(e) {
+    console.error('Xaman connect error:', e);
+    const btn = document.querySelector('#banner-disconnected button');
+    if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
   }
 }
 
@@ -615,13 +596,13 @@ async function claimFaucet(){
   btn.disabled = true; btn.textContent = 'Claiming...';
   msg.textContent = ''; msg.className = '';
   try {
-    const r = await fetch('https://cfc-nft-shared-mint-backend.onrender.com/api/faucet-claim', {
+    const r = await fetch(FAUCET_API+'/api/faucet', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({wallet: connectedWallet, submission_id: 1})
+      body: JSON.stringify({wallet: connectedWallet})
     });
     const d = await r.json();
-    if(d && d.ok){
-      msg.textContent = '✓ 25 CFC sent to your wallet! Check back tomorrow for more.';
+    if(r.ok && (d.success || d.ok)){
+      msg.textContent = '&#10003; 25 CFC sent to your wallet! Check back tomorrow for more.';
       msg.style.color = 'var(--green)';
       setTimeout(()=>fetchBalances(connectedWallet), 3000);
     } else {
