@@ -514,6 +514,19 @@ async function xamanConnect(){
     // Show a connecting indicator
     const btn = document.querySelector('#banner-disconnected button');
     if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
+    // Clear any XUMM-related storage to force QR on reconnect (matching index 23)
+    try{
+      for(var i=0; i<localStorage.length; i++){
+        var k = localStorage.key(i);
+        if(/^xumm/i.test(k)){ localStorage.removeItem(k); i--; }
+      }
+    }catch(e){}
+    try{
+      for(var j=0; j<sessionStorage.length; j++){
+        var s = sessionStorage.key(j);
+        if(/^xumm/i.test(s)){ sessionStorage.removeItem(s); j--; }
+      }
+    }catch(e){}
     await xumm.authorize();
     const account = await xumm.user.account;
     if(account){
@@ -540,12 +553,31 @@ function connectWallet(){
 }
 
 function disconnectWallet(){
+  try{ if(window.xumm && typeof window.xumm.logout === 'function') window.xumm.logout(); }catch(e){}
+  try{
+    for(var i=0; i<localStorage.length; i++){
+      var k = localStorage.key(i);
+      if(/^xumm/i.test(k)){ localStorage.removeItem(k); i--; }
+    }
+  }catch(e){}
+  try{
+    for(var j=0; j<sessionStorage.length; j++){
+      var s = sessionStorage.key(j);
+      if(/^xumm/i.test(s)){ sessionStorage.removeItem(s); j--; }
+    }
+  }catch(e){}
   connectedWallet = null;
   localStorage.removeItem('cfcWallet');
   document.getElementById('xrp-bal').textContent = '--';
   document.getElementById('cfc-bal').textContent = '--';
   updateWalletUI();
   document.getElementById('my-orders').style.display = 'none';
+  const btn = document.querySelector('#banner-disconnected button');
+  if(btn && btn.parentNode){
+    const clone = btn.cloneNode(true);
+    clone.onclick = xamanConnect;
+    btn.parentNode.replaceChild(clone, btn);
+  }
 }
 
 function updateWalletUI(){
@@ -598,11 +630,11 @@ async function claimFaucet(){
   try {
     const r = await fetch('https://cfc-nft-shared-mint-backend.onrender.com/api/faucet-claim', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({wallet: connectedWallet, submission_id: 1})
+      body: JSON.stringify({wallet: connectedWallet})
     });
     const d = await r.json();
     if(r.ok && (d.success || d.ok)){
-      msg.textContent = '&#10003; 25 CFC sent to your wallet! Check back tomorrow for more.';
+      msg.textContent = '25 CFC sent to your wallet! Check back in 24 hours';
       msg.style.color = 'var(--green)';
       setTimeout(()=>fetchBalances(connectedWallet), 3000);
     } else {
