@@ -596,7 +596,7 @@ async function claimFaucet(){
   btn.disabled = true; btn.textContent = 'Claiming...';
   msg.textContent = ''; msg.className = '';
   try {
-    const r = await fetch(FAUCET_API+'/api/faucet', {
+    const r = await fetch('https://cfc-nft-shared-mint-backend.onrender.com/api/faucet-claim', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({wallet: connectedWallet})
     });
