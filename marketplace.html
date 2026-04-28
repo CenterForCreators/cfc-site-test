@@ -526,8 +526,6 @@ async function xamanConnect(){
       connectedWallet = res.response.account;
       localStorage.setItem('cfcWallet', res.response.account);
       updateWalletUI();
-      fetchBalances(res.response.account);
-      loadOrders();
     }
   }catch(e){ console.error('Xaman connect error:', e); }
 }
@@ -602,7 +600,7 @@ async function claimFaucet(){
     });
     const d = await r.json();
     if(r.ok && (d.success || d.ok)){
-      msg.textContent = '&#10003; 25 CFC sent to your wallet! Check back tomorrow for more.';
+      msg.textContent = '&#10003; 25 CFC sent to your wallet! Check back in 24 hours';
       msg.style.color = 'var(--green)';
       setTimeout(()=>fetchBalances(connectedWallet), 3000);
     } else {
