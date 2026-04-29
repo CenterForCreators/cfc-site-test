@@ -949,6 +949,9 @@ async function redeemOrder(orderId) {
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  if(!window.xumm && typeof Xumm!=='undefined'){
+    try{ window.xumm = new Xumm('ffa83df2-e68d-4172-a77c-e7af7e5274ea'); console.log('Constructed Xumm Object'); }catch(e){ console.error('Xumm fallback failed:', e); }
+  }
   const connectBtn = document.querySelector('button[onclick="xamanConnect()"]');
   if (connectBtn) connectBtn.addEventListener('click', xamanConnect);
 });
