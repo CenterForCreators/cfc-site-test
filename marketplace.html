@@ -509,22 +509,30 @@ function getXumm(){
 }
 
 async function connect(){
-  try {
-    const xumm = getXumm();
+  try{
+    const sub = await xumm.payload.createAndSubscribe({
+      txjson: { TransactionType: 'SignIn' },
+      options: {
+        return_url: {
+          web: window.location.href,
+          app: window.location.href
+        }
+      }
+    }, function(){});
 
-    await xumm.authorize();
-    const account = await xumm.user.account;
+    const res = await sub.resolved;
 
-    if(account){
-      connectedWallet = account;
-      localStorage.setItem('cfcWallet', account);
-      updateWalletUI();
-      fetchBalances(account);
-      loadOrders();
+    if (res?.signed && res?.response?.account){
+      window.connectedAccount = res.response.account;
+      sessionStorage.setItem('connectedAccount', res.response.account);
+      sessionStorage.setItem('xummSignedIn', '1');
+
+      var a = document.getElementById('address');
+      if(a) a.textContent = res.response.account;
     }
 
-  } catch(e) {
-    console.error('Xaman connect error:', e);
+  } catch(e){
+    console.error('Connection cancelled.');
   }
 }
 
