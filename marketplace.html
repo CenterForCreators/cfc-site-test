@@ -515,7 +515,8 @@ async function xamanConnect(){
     const btn = document.querySelector('#banner-disconnected button');
    
     await xumm.authorize();
-    const account = await xumm.user.account;
+    const result = await xumm.authorize();
+const account = result?.me?.account;
 
     if(account){
       connectedWallet = account;
