@@ -510,6 +510,8 @@ function getXumm(){
 
 async function connect(){
   try{
+    const xumm = getXumm();
+
     const sub = await xumm.payload.createAndSubscribe({
       txjson: { TransactionType: 'SignIn' },
       options: {
@@ -535,7 +537,9 @@ var a = document.getElementById('wallet-address');
     console.error('Connection cancelled.');
   }
 }
-
+function openWalletModal(){
+  if(window.connect){ connect(); }
+}
 // Keep openWalletModal as alias for backwards compat
 
 function disconnectWallet(){
