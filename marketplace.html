@@ -233,7 +233,7 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
 </style>
   <script src="https://xumm.app/assets/cdn/xumm.min.js"></script>
 </head>
-<body onload="try{ window.xumm = new Xumm('ffa83df2-e68d-4172-a77c-e7af7e5274ea'); }catch(e){ console.error(e); }">
+<body>
 
 <canvas id="canvas"></canvas>
 
@@ -510,25 +510,19 @@ function getXumm(){
 
 async function xamanConnect(){
   try {
+    const xumm = getXumm();
+
     const btn = document.querySelector('#banner-disconnected button');
     if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
-    
-    const sub = await xumm.payload.createAndSubscribe({
-      txjson: { TransactionType: 'SignIn' },
-      options: {
-        return_url: {
-          web: 'https://centerforcreators.com/nft-marketplace',
-          app: 'https://centerforcreators.com/nft-marketplace'
-        }
-      }
-    }, function(){});
-    
-    const res = await sub.resolved;
-    if (res?.signed && res?.response?.account){
-      connectedWallet = res.response.account;
-      localStorage.setItem('cfcWallet', res.response.account);
+
+    await xumm.authorize();
+    const account = await xumm.user.account;
+
+    if(account){
+      connectedWallet = account;
+      localStorage.setItem('cfcWallet', account);
       updateWalletUI();
-      fetchBalances(res.response.account);
+      fetchBalances(account);
       loadOrders();
     } else {
       if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
