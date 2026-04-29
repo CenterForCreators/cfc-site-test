@@ -508,14 +508,12 @@ function getXumm(){
   return xummInstance;
 }
 
-async function xamanConnect(){
+async function connect(){
   try {
     const xumm = getXumm();
 
-    const btn = document.querySelector('#banner-disconnected button');
-   
-  await xumm.authorize();
-const account = await xumm.user.account;
+    await xumm.authorize();
+    const account = await xumm.user.account;
 
     if(account){
       connectedWallet = account;
@@ -523,13 +521,10 @@ const account = await xumm.user.account;
       updateWalletUI();
       fetchBalances(account);
       loadOrders();
-    } else {
-      if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
     }
+
   } catch(e) {
     console.error('Xaman connect error:', e);
-    const btn = document.querySelector('#banner-disconnected button');
-    if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
   }
 }
 
