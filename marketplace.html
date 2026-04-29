@@ -526,6 +526,12 @@ async function connect(){
 
     if (res?.signed && res?.response?.account){
       window.connectedAccount = res.response.account;
+      connectedWallet = res.response.account;
+localStorage.setItem('cfcWallet', res.response.account);
+
+updateWalletUI();
+fetchBalances(res.response.account);
+loadOrders();
       sessionStorage.setItem('connectedAccount', res.response.account);
       sessionStorage.setItem('xummSignedIn', '1');
 var a = document.getElementById('wallet-address');
