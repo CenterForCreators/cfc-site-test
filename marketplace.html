@@ -513,8 +513,7 @@ async function xamanConnect(){
     const xumm = getXumm();
 
     const btn = document.querySelector('#banner-disconnected button');
-    if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
-
+   
     await xumm.authorize();
     const account = await xumm.user.account;
 
