@@ -509,6 +509,7 @@ function getXumm(){
 }
 
 async function xamanConnect(){
+  console.log('xamanConnect clicked, xumm is:', window.xumm);
   try{
     const sub = await xumm.payload.createAndSubscribe({
       txjson: { TransactionType: 'SignIn' },
