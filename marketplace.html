@@ -511,6 +511,7 @@ function getXumm(){
 async function xamanConnect(){
   console.log('xamanConnect clicked, xumm is:', window.xumm);
   try{
+    console.log('About to call createAndSubscribe...');
     const sub = await xumm.payload.createAndSubscribe({
       txjson: { TransactionType: 'SignIn' },
       options: {
@@ -521,9 +522,14 @@ async function xamanConnect(){
       }
     }, function(){});
 
-   // DO NOT manually redirect when using createAndSubscribe
+    console.log('Payload created, sub is:', sub);
 
+    // DO NOT manually redirect when using createAndSubscribe
+
+    console.log('Waiting for sub.resolved...');
     const res = await sub.resolved;
+    console.log('Resolution received:', res);
+    
     if (res?.signed && res?.response?.account){
       window.connectedAccount = res.response.account;
       connectedWallet = res.response.account;
@@ -535,6 +541,9 @@ async function xamanConnect(){
       updateWalletUI();
       fetchBalances(res.response.account);
       loadOrders();
+      console.log('Connect successful!');
+    } else {
+      console.log('Not signed or no account in response');
     }
   }catch(e){ 
     console.error('Xaman connect error', e);
