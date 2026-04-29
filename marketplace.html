@@ -509,26 +509,35 @@ function getXumm(){
 }
 
 async function xamanConnect(){
-  try {
-    const xumm = getXumm();
-    // Show a connecting indicator
-    const btn = document.querySelector('#banner-disconnected button');
-    if(btn){ btn.textContent = 'Opening Xaman...'; btn.disabled = true; }
-    await xumm.authorize();
-    const account = await xumm.user.account;
-    if(account){
-      connectedWallet = account;
-      localStorage.setItem('cfcWallet', account);
+  try{
+    const sub = await xumm.payload.createAndSubscribe({
+      txjson: { TransactionType: 'SignIn' },
+      options: {
+        return_url: {
+          web: 'https://centerforcreators.com/nft-marketplace',
+          app: 'https://centerforcreators.com/nft-marketplace'
+        }
+      }
+    }, function(){});
+
+   // DO NOT manually redirect when using createAndSubscribe
+
+    const res = await sub.resolved;
+    if (res?.signed && res?.response?.account){
+      window.connectedAccount = res.response.account;
+      connectedWallet = res.response.account;
+      sessionStorage.setItem('connectedAccount', res.response.account);
+      sessionStorage.setItem('xummSignedIn', '1');
+      localStorage.setItem('cfcWallet', res.response.account);
+      var a=document.getElementById('address'); if(a) a.textContent = res.response.account;
+      var m=document.getElementById('claimMsg'); if(m) m.textContent='';
       updateWalletUI();
-      fetchBalances(account);
+      fetchBalances(res.response.account);
       loadOrders();
-    } else {
-      if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
     }
-  } catch(e) {
-    console.error('Xaman connect error:', e);
-    const btn = document.querySelector('#banner-disconnected button');
-    if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
+  }catch(e){ 
+    console.error('Xaman connect error', e);
+    var m=document.getElementById('claimMsg'); if(m) m.textContent='Connection cancelled.'; 
   }
 }
 
