@@ -945,5 +945,13 @@ async function redeemOrder(orderId) {
 }
 
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const connectBtn = document.querySelector('button[onclick="xamanConnect()"]');
+  if (connectBtn) connectBtn.addEventListener('click', xamanConnect);
+});
+</script>
+
 </body>
 </html>
