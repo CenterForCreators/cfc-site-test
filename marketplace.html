@@ -523,6 +523,7 @@ const obs = new IntersectionObserver((entries)=>{
 revealEls.forEach(el=>obs.observe(el));
 
 // ── WALLET ──
+  let connectedWallet = null;
 function cleanTexts(){}
 (function(){
   function gid(id){ return document.getElementById(id); }
