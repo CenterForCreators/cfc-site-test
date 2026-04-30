@@ -510,14 +510,16 @@ function getXumm(){
   return xummInstance;
 }
 
+window.CFC = window.CFC||{};
+
 async function connect(){
   try{
     const sub = await xumm.payload.createAndSubscribe({
       txjson: { TransactionType: 'SignIn' },
       options: {
         return_url: {
-          web: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html',
-          app: 'https://centerforcreators.github.io/cfc-site-test/marketplace.html'
+          web: https://centerforcreators.github.io/cfc-site-test/marketplace.html',
+          app: https://centerforcreators.github.io/cfc-site-test/marketplace.html'
         }
       }
     }, function(){});
@@ -533,9 +535,6 @@ async function connect(){
       var m=document.getElementById('claimMsg'); if(m) m.textContent='';
     }
   }catch(e){ var m=document.getElementById('claimMsg'); if(m) m.textContent='Connection cancelled.'; }
-}
-function openWalletModal(){
-  if(window.connect){ connect(); }
 }
 // Keep openWalletModal as alias for backwards compat
 
