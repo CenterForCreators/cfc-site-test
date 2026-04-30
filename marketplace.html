@@ -231,7 +231,6 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
   .modal-box { padding:1.5rem; }
 }
 </style>
-  <script src="https://xumm.app/assets/cdn/xumm.min.js"></script>
   <script>
   window.xumm = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
 </script>
@@ -619,6 +618,20 @@ function cleanTexts(){}
   }
   setTimeout(updateWallet, 1000);
   setInterval(updateWallet, 4000);
+  // restore session
+const saved = sessionStorage.getItem('connectedAccount');
+if (saved){
+  window.connectedAccount = saved;
+
+  const addr = document.getElementById('connectedAddress');
+  if (addr) addr.textContent = saved;
+
+  const walletbar = document.getElementById('walletbar');
+  if (walletbar) walletbar.style.display = 'flex';
+
+  const status = document.getElementById('wb_status');
+  if (status) status.textContent = 'Connected';
+}
 })();
 
 async function connect(){
@@ -634,18 +647,34 @@ async function connect(){
     }, function(){});
 
    // DO NOT manually redirect when using createAndSubscribe
+const res = await sub.resolved;
+if (res?.signed && res?.response?.account){
+  const account = res.response.account;
 
-    const res = await sub.resolved;
-    if (res?.signed && res?.response?.account){
-     connectedWallet = res.response.account;
-localStorage.setItem('cfcWallet', res.response.account);
-      sessionStorage.setItem('connectedAccount', res.response.account);
-      sessionStorage.setItem('xummSignedIn', '1');
-      var a=document.getElementById('address'); if(a) a.textContent = res.response.account;
-      var m=document.getElementById('claimMsg'); if(m) m.textContent='';
-    }
-  }catch(e){ var m=document.getElementById('claimMsg'); if(m) m.textContent='Connection cancelled.'; }
+  window.connectedAccount = account;
+  sessionStorage.setItem('connectedAccount', account);
+  sessionStorage.setItem('xummSignedIn', '1');
+
+  connectedWallet = account;
+  localStorage.setItem('cfcWallet', account);
+
+  const addr = document.getElementById('connectedAddress');
+  if (addr) addr.textContent = account;
+
+  const walletbar = document.getElementById('walletbar');
+  if (walletbar) walletbar.style.display = 'flex';
+
+  const status = document.getElementById('wb_status');
+  if (status) status.textContent = 'Connected';
+
+  const m = document.getElementById('claimMsg');
+  if (m) m.textContent = '';
+
+  if (typeof loadNFTs === 'function') loadNFTs();
 }
+}catch(e){ var m=document.getElementById('claimMsg'); if(m) m.textContent='Connection cancelled.'; }
+}
+   
 // Keep openWalletModal as alias for backwards compat
 
 function disconnectWallet(){
@@ -875,7 +904,7 @@ async function confirmBuy(){
     const endpoint = buyCurrency === 'XRP' ? '/api/market/pay-xrp' : '/api/market/pay-rlusd';
     const r = await fetch(MARKET_API+endpoint, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({wallet: connectedWallet, nft_id: buyNFT.id})
+      body: JSON.stringify({wallet: window.connectedAccount, nft_id: buyNFT.id})
     });
     const d = await r.json();
     if(!r.ok || (!d.uuid && !d.link)) throw new Error(d.error || 'Payment request failed');
