@@ -827,7 +827,6 @@ function initBuy(nftId, currency){
 
 function showBuyStep1(){
   if(!buyNFT) return;
-  const imgUrl = buyNFT.image_cid ? IPFS_GATEWAY+buyNFT.image_cid : '';
   const xrpPrice = buyNFT.price_xrp ? buyNFT.price_xrp+' XRP' : null;
   const rlusdPrice = buyNFT.price_rlusd ? buyNFT.price_rlusd+' RLUSD' : null;
   const currentPrice = buyCurrency === 'XRP' ? xrpPrice : rlusdPrice;
