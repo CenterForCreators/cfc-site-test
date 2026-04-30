@@ -319,13 +319,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <span class="bal-pill cfc-pill">CFC <span id="cfc-bal">--</span></span>
     <button onclick="disconnectWallet()" style="background:transparent;border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:8px;padding:0.3rem 0.9rem;cursor:pointer;font-size:0.8rem;font-family:inherit;">Disconnect</button>
   </div>
-  <div class="wallet-addr-display" id="wallet-addr-display" style="display:none;">
-    const walletDisplay = document.querySelector('.wallet-addr-display');
-if (walletDisplay){
-  walletDisplay.style.display = 'flex';
-  walletDisplay.textContent = connectedWallet;
-}
-  </div>
+ <div class="wallet-addr-display" id="wallet-addr-display" style="display:none;"></div>
 </div>
 
 <!-- FAUCET SECTION -->
@@ -665,6 +659,8 @@ async function connect(){
 const res = await sub.resolved;
 if (res?.signed && res?.response?.account){
   connectedWallet = res.response.account;
+  const banner = document.getElementById('wallet-banner');
+if (banner) banner.classList.remove('hidden');
   window.connectedAccount = connectedWallet;
   localStorage.setItem('cfcWallet', res.response.account);
   sessionStorage.setItem('connectedAccount', res.response.account);
