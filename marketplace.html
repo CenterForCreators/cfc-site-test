@@ -320,6 +320,11 @@ document.addEventListener('DOMContentLoaded', function(){
     <button onclick="disconnectWallet()" style="background:transparent;border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:8px;padding:0.3rem 0.9rem;cursor:pointer;font-size:0.8rem;font-family:inherit;">Disconnect</button>
   </div>
   <div class="wallet-addr-display" id="wallet-addr-display" style="display:none;">
+    const walletDisplay = document.querySelector('.wallet-addr-display');
+if (walletDisplay){
+  walletDisplay.style.display = 'flex';
+  walletDisplay.textContent = connectedWallet;
+}
   </div>
 </div>
 
@@ -660,6 +665,7 @@ async function connect(){
 const res = await sub.resolved;
 if (res?.signed && res?.response?.account){
   connectedWallet = res.response.account;
+  window.connectedAccount = connectedWallet;
   localStorage.setItem('cfcWallet', res.response.account);
   sessionStorage.setItem('connectedAccount', res.response.account);
   sessionStorage.setItem('xummSignedIn', '1');
@@ -735,7 +741,7 @@ async function claimFaucet(){
     const r = await fetch('https://cfc-nft-shared-mint-backend.onrender.com/api/faucet-claim', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({wallet: connectedAccount, submission_id: 1})
+      body: JSON.stringify({wallet: connectedWallet, submission_id: 1})
     });
     const d = await r.json();
     if(r.ok && (d.ok || d.success)){
