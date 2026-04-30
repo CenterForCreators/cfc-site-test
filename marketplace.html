@@ -231,8 +231,18 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
   .modal-box { padding:1.5rem; }
 }
 </style>
+ <script 
+  src="https://xumm.app/assets/cdn/xumm.min.js"
+  defer>
+</script>
   <script>
-  window.xumm = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
+document.addEventListener('DOMContentLoaded', function(){
+  try{
+    window.xumm = new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
+  }catch(e){
+    console.error('XUMM INIT ERROR', e);
+  }
+});
 </script>
 </head>
 <body>
@@ -649,28 +659,12 @@ async function connect(){
    // DO NOT manually redirect when using createAndSubscribe
 const res = await sub.resolved;
 if (res?.signed && res?.response?.account){
-  const account = res.response.account;
-
-  window.connectedAccount = account;
-  sessionStorage.setItem('connectedAccount', account);
+  connectedWallet = res.response.account;
+  localStorage.setItem('cfcWallet', res.response.account);
+  sessionStorage.setItem('connectedAccount', res.response.account);
   sessionStorage.setItem('xummSignedIn', '1');
-
-  connectedWallet = account;
-  localStorage.setItem('cfcWallet', account);
-
-  const addr = document.getElementById('connectedAddress');
-  if (addr) addr.textContent = account;
-
-  const walletbar = document.getElementById('walletbar');
-  if (walletbar) walletbar.style.display = 'flex';
-
-  const status = document.getElementById('wb_status');
-  if (status) status.textContent = 'Connected';
-
-  const m = document.getElementById('claimMsg');
-  if (m) m.textContent = '';
-
-  if (typeof loadNFTs === 'function') loadNFTs();
+  var a=document.getElementById('address'); if(a) a.textContent = res.response.account;
+  var m=document.getElementById('claimMsg'); if(m) m.textContent='';
 }
 }catch(e){ var m=document.getElementById('claimMsg'); if(m) m.textContent='Connection cancelled.'; }
 }
