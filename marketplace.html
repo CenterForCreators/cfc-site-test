@@ -739,7 +739,7 @@ function getCategoryBadgeClass(cat){
 }
 
 function renderNFTCard(nft){
-  const imgUrl = nft.image_cid ? IPFS_GATEWAY+nft.image_cid : '';
+  const imgId = `img-${nft.id}`;
   const available = nft.quantity ?? 0;
   const cat = nft.category || 'art';
   const soldOut = available <= 0;
