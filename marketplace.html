@@ -451,8 +451,23 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
 // ── CONFIG ──
 const MARKET_API = 'https://cfc-nft-shared-mint-backend.onrender.com';
 const FAUCET_API = 'https://cfc-faucet.onrender.com';
-const IPFS_GATEWAY = 'https://gateway.pinata.cloud/ipfs/';
 const CFC_ISSUER = 'rsxUkmjnAn8PRDz8RYrPusb9mTDYn5NqG8';
+function cfc_imgFallback(el, cid){
+  const tries = [
+    `https://ipfs.io/ipfs/${cid}`,
+    `https://dweb.link/ipfs/${cid}`
+  ];
+
+  let i = 0;
+  function tryNext(){
+    if (i >= tries.length) return;
+    el.src = tries[i++];
+  }
+
+  el.onerror = tryNext;
+  tryNext();
+}
+  
 
 // ── PARTICLE CANVAS ──
 const canvas = document.getElementById('canvas');
