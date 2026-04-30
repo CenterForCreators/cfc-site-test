@@ -820,7 +820,7 @@ let buyCurrency = 'XRP';
 let xamanPollTimer = null;
 
 function initBuy(nftId, currency){
-  if(!connectedWallet){ openWalletModal(); return; }
+  if(!window.connectedAccount){ openWalletModal(); return; }
   buyNFT = allNFTs.find(n=>n.id===nftId);
   if(!buyNFT) return;
   buyCurrency = currency || (buyNFT.price_xrp ? 'XRP' : 'RLUSD');
@@ -974,6 +974,11 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
 // ── INIT ──
 
 loadNFTs();
+ loadNFTs();
+
+if (typeof cfc_refresh_market === 'function') {
+  cfc_refresh_market();
+} 
 </script>
 <script>
  
