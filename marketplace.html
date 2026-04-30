@@ -300,7 +300,7 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
   </div>
   <!-- Connected state -->
   <div id="banner-connected" style="display:none;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;">
-    <span id="wallet-addr-text" style="color:var(--gold);font-size:0.88rem;"></span>
+    <span id="address" style="color:var(--gold);font-size:0.88rem;"></span>
     <span class="bal-pill xrp-pill">XRP <span id="xrp-bal">--</span></span>
     <span class="bal-pill cfc-pill">CFC <span id="cfc-bal">--</span></span>
     <button onclick="disconnectWallet()" style="background:transparent;border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:8px;padding:0.3rem 0.9rem;cursor:pointer;font-size:0.8rem;font-family:inherit;">Disconnect</button>
@@ -534,7 +534,7 @@ fetchBalances(res.response.account);
 loadOrders();
       sessionStorage.setItem('connectedAccount', res.response.account);
       sessionStorage.setItem('xummSignedIn', '1');
-var a = document.getElementById('wallet-address');
+var a = document.getElementById('address');
       
       if(a) a.textContent = res.response.account;
     }
