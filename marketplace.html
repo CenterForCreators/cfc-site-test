@@ -491,15 +491,7 @@ revealEls.forEach(el=>obs.observe(el));
 // ── WALLET ──
 let connectedWallet = null;
 
-function loadWallet(){
-  const saved = localStorage.getItem('cfcWallet');
-  if(saved && saved.startsWith('r') && saved.length >= 25){
-    connectedWallet = saved;
-    updateWalletUI();
-    fetchBalances(saved);
-    loadOrders();
-  }
-}
+
 
 // XAMAN wallet connect via SDK
 let xummInstance = null;
@@ -510,69 +502,36 @@ function getXumm(){
 
 async function connect(){
   try{
-    const xumm = getXumm();
-
     const sub = await xumm.payload.createAndSubscribe({
       txjson: { TransactionType: 'SignIn' },
       options: {
         return_url: {
-          web: window.location.href,
-          app: window.location.href
+          web: 'https://centerforcreators.com/nft-marketplace',
+          app: 'https://centerforcreators.com/nft-marketplace'
         }
       }
     }, function(){});
 
-    const res = await sub.resolved;
+   // DO NOT manually redirect when using createAndSubscribe
 
+    const res = await sub.resolved;
     if (res?.signed && res?.response?.account){
       window.connectedAccount = res.response.account;
-      connectedWallet = res.response.account;
-localStorage.setItem('cfcWallet', res.response.account);
-
-updateWalletUI();
-fetchBalances(res.response.account);
-loadOrders();
       sessionStorage.setItem('connectedAccount', res.response.account);
       sessionStorage.setItem('xummSignedIn', '1');
-var a = document.getElementById('address');
-      
-      if(a) a.textContent = res.response.account;
+      var a=document.getElementById('address'); if(a) a.textContent = res.response.account;
+      var m=document.getElementById('claimMsg'); if(m) m.textContent='';
     }
-
-  } catch(e){
-    console.error('Connection cancelled.');
-  }
+  }catch(e){ var m=document.getElementById('claimMsg'); if(m) m.textContent='Connection cancelled.'; }
 }
 function openWalletModal(){
   if(window.connect){ connect(); }
 }
 // Keep openWalletModal as alias for backwards compat
 
-function disconnectWallet(){
-  connectedWallet = null;
-  localStorage.removeItem('cfcWallet');
-  document.getElementById('xrp-bal').textContent = '--';
-  document.getElementById('cfc-bal').textContent = '--';
-  updateWalletUI();
-  document.getElementById('my-orders').style.display = 'none';
-}
 
-function updateWalletUI(){
-  const connected = document.getElementById('banner-connected');
-  const disconnected = document.getElementById('banner-disconnected');
-  const addrText = document.getElementById('wallet-addr-text');
-  if(connectedWallet){
-    const short = connectedWallet.slice(0,8)+'...'+connectedWallet.slice(-4);
-    addrText.textContent = 'Connected: '+short;
-    connected.style.display = 'flex';
-    disconnected.style.display = 'none';
-    document.getElementById('my-orders').style.display = 'block';
-  } else {
-    connected.style.display = 'none';
-    disconnected.style.display = 'flex';
-    document.getElementById('my-orders').style.display = 'none';
-  }
-}
+
+
 
 async function fetchBalances(wallet){
   try {
@@ -689,17 +648,17 @@ async function loadNFTs(){
   }
 }
 
-function renderFilteredNFTs(){
-  const grid = document.getElementById('nft-grid');
-  const normCat = c => c.toLowerCase().replace(/s$/, '');
-  const filtered = activeCategory === 'all' ? allNFTs : allNFTs.filter(n => normCat(n.category||'art') === normCat(activeCategory));
-  if(!filtered.length){
-  grid.innerHTML = `<div class="empty-state"><div class="empty-icon">&#127912;</div><div class="empty-title">No NFTs in this category</div><div class="empty-sub">Check back soon or browse all categories.</div></div>`; 
-    return;
-  }
-  grid.innerHTML = filtered.map(renderNFTCard).join('');
-  // Re-observe for reveal animation
-  grid.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+function renderFilteredNFTs() {
+  const grid = document.getElementById("cfc-market-grid");
+  if (!grid || !window.allMarketItems) return;
+
+const filtered =
+  activeCategory === "all"
+    ? window.allMarketItems
+    : window.allMarketItems.filter(n => n.category === activeCategory);
+
+  grid.innerHTML = filtered.map(cfc_renderNFT).join("");
+ lucide.createIcons();
 }
 
 // Filter tabs
@@ -871,7 +830,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
 });
 
 // ── INIT ──
-loadWallet();
+
 loadNFTs();
 </script>
 <script>
@@ -885,20 +844,37 @@ loadNFTs();
     }
   });
 
-function switchView(view) {
-  // Update tab active state
-  document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
-  const tabMap = {'listings': 0, 'my-orders': 1, 'redeem': 2};
-  document.querySelectorAll('.view-tab')[tabMap[view]]?.classList.add('active');
+function switchView(which){
+  // FORCE STATIC MARKET TO STAY HIDDEN
+const staticMarket = document.getElementById("view-market");
+if (staticMarket) staticMarket.style.display = "none";
 
-  // Show/hide sections
-  document.getElementById('listings').style.display = view === 'listings' ? '' : 'none';
-  document.getElementById('my-orders').style.display = view === 'my-orders' ? '' : 'none';
-  document.getElementById('redeem-view').style.display = view === 'redeem' ? '' : 'none';
+  const market = document.getElementById('view-market')
+  const purchases = document.getElementById('view-purchases')
+  const redeem = document.getElementById('view-redeem')
+  const liveMarket = document.getElementById('cfc-market-live')
 
-  if (view === 'my-orders') loadOrders();
-  if (view === 'redeem') loadRedeem();
+  // Hide everything first
+  if (market) market.style.display = 'none'
+  if (purchases) purchases.style.display = 'none'
+  if (redeem) redeem.style.display = 'none'
+  if (liveMarket) liveMarket.style.display = 'none'
+
+  // Show only what is needed
+  if (which === 'market'){
+   if (market) market.style.display = 'none'   // keep static NFTs hidden
+    if (liveMarket) liveMarket.style.display = 'block'
+  }
+
+  if (which === 'purchases'){
+    if (purchases) purchases.style.display = 'block'
+  }
+
+  if (which === 'redeem'){
+    if (redeem) redeem.style.display = 'block'
+  }
 }
+
 
 function loadRedeem() {
   const el = document.getElementById('redeem-list');
@@ -947,5 +923,79 @@ async function redeemOrder(orderId) {
 
 </script>
   
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  const connectBtn = document.getElementById('connectBtn')
+ if (connectBtn) connectBtn.addEventListener('click', connect)
+
+  const buy1rlusd = document.getElementById('buy1rlusd')
+  if (buy1rlusd) buy1rlusd.addEventListener('click', () => buyWithRLUSD(CONFIG.ITEMS[0]))
+
+  const buy2rlusd = document.getElementById('buy2rlusd')
+  if (buy2rlusd) buy2rlusd.addEventListener('click', () => buyWithRLUSD(CONFIG.ITEMS[1]))
+
+  const buy3rlusd = document.getElementById('buy3rlusd')
+  if (buy3rlusd) buy3rlusd.addEventListener('click', () => buyWithRLUSD(CONFIG.ITEMS[2]))
+
+  const buy1xrp = document.getElementById('buy1xrp')
+  if (buy1xrp) buy1xrp.addEventListener('click', () => buyWithXRP(CONFIG.ITEMS[0]))
+
+  const buy2xrp = document.getElementById('buy2xrp')
+  if (buy2xrp) buy2xrp.addEventListener('click', () => buyWithXRP(CONFIG.ITEMS[1]))
+
+  const buy3xrp = document.getElementById('buy3xrp')
+  if (buy3xrp) buy3xrp.addEventListener('click', () => buyWithXRP(CONFIG.ITEMS[2]))
+
+
+  if (typeof switchView === 'function') {
+    switchView('market')
+  }
+
+})
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  try {
+
+</script>
+
+<script>
+  const navMarket = document.getElementById('navMarket')
+  const navPurchases = document.getElementById('navPurchases')
+ const saved = localStorage.getItem('xummAccount');
+if (saved) window.connectedAccount = saved;
+  const navRedeem = document.getElementById('navRedeem')
+
+ if (navMarket){
+  navMarket.addEventListener('click', async () => {
+    // Go to market view
+    switchView('market');
+
+    try {
+      activeCategory = "all";
+
+      // Update tab highlight
+      document.querySelectorAll("#cfc-category-tabs .btn").forEach(b => b.classList.remove("active"));
+      const allBtn = document.querySelector('#cfc-category-tabs .btn[data-cat="all"]');
+      if (allBtn) allBtn.classList.add("active");
+
+      // 🔥 THIS IS THE FIX (you were missing this)
+      await cfc_refresh_market();
+
+      // Re-render
+      if (typeof renderFilteredNFTs === "function") renderFilteredNFTs();
+
+    } catch(e){}
+  })
+}
+
+  if (navPurchases){
+    navPurchases.addEventListener('click', async () => {
+      switchView('purchases')
+      if (typeof loadMyPurchases === 'function') {
+        await loadMyPurchases()
+
+</script>
 </body>
 </html>
