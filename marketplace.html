@@ -303,7 +303,7 @@ footer { background:var(--bg2); border-top:1px solid var(--border); padding:60px
     <span id="address" style="color:var(--gold);font-size:0.88rem;"></span>
     <span class="bal-pill xrp-pill">XRP <span id="xrp-bal">--</span></span>
     <span class="bal-pill cfc-pill">CFC <span id="cfc-bal">--</span></span>
-    <button onclick="disconnectWallet()" style="background:transparent;border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:8px;padding:0.3rem 0.9rem;cursor:pointer;font-size:0.8rem;font-family:inherit;">Disconnect</button>
+    <button  style="background:transparent;border:1px solid rgba(239,68,68,0.4);color:#f87171;border-radius:8px;padding:0.3rem 0.9rem;cursor:pointer;font-size:0.8rem;font-family:inherit;">Disconnect</button>
   </div>
   <div class="wallet-addr-display" id="wallet-addr-display" style="display:none;">
   </div>
@@ -459,7 +459,7 @@ let W, H, particles = [], mouse = {x:null,y:null};
 function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
 resize(); window.addEventListener('resize', resize);
 window.addEventListener('mousemove', e=>{ mouse.x=e.clientX; mouse.y=e.clientY; });
-const COLORS = ['rgba(240,180,41,','rgba(124,58,237,','rgba(16,185,129,'];
+const COLORS = ['rgba(240,180,41,1)','rgba(124,58,237,1)','rgba(16,185,129,1)'];
 for(let i=0;i<90;i++){
   const c = COLORS[Math.floor(Math.random()*COLORS.length)];
   particles.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-0.5)*0.35,vy:(Math.random()-0.5)*0.35,r:Math.random()*1.8+0.5,color:c,alpha:Math.random()*0.6+0.2});
@@ -491,8 +491,6 @@ revealEls.forEach(el=>obs.observe(el));
 // ── WALLET ──
 let connectedWallet = null;
 
-
-
 // XAMAN wallet connect via SDK
 let xummInstance = null;
 function getXumm(){
@@ -500,38 +498,81 @@ function getXumm(){
   return xummInstance;
 }
 
+function switchView(which){
+  // FORCE STATIC MARKET TO STAY HIDDEN
+const staticMarket = document.getElementById("view-market");
+if (staticMarket) staticMarket.style.display = "none";
+
+  const market = document.getElementById('view-market')
+  const purchases = document.getElementById('view-purchases')
+  const redeem = document.getElementById('view-redeem')
+  const liveMarket = document.getElementById('cfc-market-live')
+
+  // Hide everything first
+  if (market) market.style.display = 'none'
+  if (purchases) purchases.style.display = 'none'
+  if (redeem) redeem.style.display = 'none'
+  if (liveMarket) liveMarket.style.display = 'none'
+
+  // Show only what is needed
+  if (which === 'market'){
+   if (market) market.style.display = 'none'   // keep static NFTs hidden
+    if (liveMarket) liveMarket.style.display = 'block'
+  }
+
+  if (which === 'purchases'){
+    if (purchases) purchases.style.display = 'block'
+  }
+
+  if (which === 'redeem'){
+    if (redeem) redeem.style.display = 'block'
+  }
+}
+
 async function connect(){
   try{
+    const xumm = getXumm();
+
     const sub = await xumm.payload.createAndSubscribe({
       txjson: { TransactionType: 'SignIn' },
       options: {
         return_url: {
-          web: 'https://centerforcreators.com/nft-marketplace',
-          app: 'https://centerforcreators.com/nft-marketplace'
+          web: window.location.href,
+          app: window.location.href
         }
       }
     }, function(){});
 
-   // DO NOT manually redirect when using createAndSubscribe
-
     const res = await sub.resolved;
+
     if (res?.signed && res?.response?.account){
       window.connectedAccount = res.response.account;
+      connectedWallet = res.response.account;
+localStorage.setItem('cfcWallet', res.response.account);
+
+fetchBalances(res.response.account);
+loadOrders();
       sessionStorage.setItem('connectedAccount', res.response.account);
       sessionStorage.setItem('xummSignedIn', '1');
-      var a=document.getElementById('address'); if(a) a.textContent = res.response.account;
-      var m=document.getElementById('claimMsg'); if(m) m.textContent='';
+var a = document.getElementById('address');
+      
+      if(a) a.textContent = res.response.account;
     }
-  }catch(e){ var m=document.getElementById('claimMsg'); if(m) m.textContent='Connection cancelled.'; }
+
+  } catch(e){
+    console.error('Connection cancelled.');
+  }
 }
 function openWalletModal(){
   if(window.connect){ connect(); }
 }
 // Keep openWalletModal as alias for backwards compat
-
-
-
-
+ else {
+    connected.style.display = 'none';
+    disconnected.style.display = 'flex';
+    document.getElementById('my-orders').style.display = 'none';
+  }
+}
 
 async function fetchBalances(wallet){
   try {
@@ -660,6 +701,59 @@ const filtered =
   grid.innerHTML = filtered.map(cfc_renderNFT).join("");
  lucide.createIcons();
 }
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  const connectBtn = document.getElementById('connectBtn')
+ if (connectBtn) connectBtn.addEventListener('click', connect)
+
+  const buy1rlusd = document.getElementById('buy1rlusd')
+  if (buy1rlusd) buy1rlusd.addEventListener('click', () => buyWithRLUSD(CONFIG.ITEMS[0]))
+
+  const buy2rlusd = document.getElementById('buy2rlusd')
+  if (buy2rlusd) buy2rlusd.addEventListener('click', () => buyWithRLUSD(CONFIG.ITEMS[1]))
+
+  const buy3rlusd = document.getElementById('buy3rlusd')
+  if (buy3rlusd) buy3rlusd.addEventListener('click', () => buyWithRLUSD(CONFIG.ITEMS[2]))
+
+  const buy1xrp = document.getElementById('buy1xrp')
+  if (buy1xrp) buy1xrp.addEventListener('click', () => buyWithXRP(CONFIG.ITEMS[0]))
+
+  const buy2xrp = document.getElementById('buy2xrp')
+  if (buy2xrp) buy2xrp.addEventListener('click', () => buyWithXRP(CONFIG.ITEMS[1]))
+
+  const buy3xrp = document.getElementById('buy3xrp')
+  if (buy3xrp) buy3xrp.addEventListener('click', () => buyWithXRP(CONFIG.ITEMS[2]))
+
+
+  if (typeof switchView === 'function') {
+    switchView('market')
+  }
+
+}
+
+navMarket.addEventListener('click', async () => {
+    // Go to market view
+    switchView('market');
+
+    try {
+      activeCategory = "all";
+
+      // Update tab highlight
+      document.querySelectorAll("#cfc-category-tabs .btn").forEach(b => b.classList.remove("active"));
+      const allBtn = document.querySelector('#cfc-category-tabs .btn[data-cat="all"]');
+      if (allBtn) allBtn.classList.add("active");
+
+      // 🔥 THIS IS THE FIX (you were missing this)
+      await cfc_refresh_market();
+
+      // Re-render
+      if (typeof renderFilteredNFTs === "function") renderFilteredNFTs();
+
+    } catch(e){}
+  }
 
 // Filter tabs
 document.querySelectorAll('.filter-tab').forEach(tab=>{
@@ -830,7 +924,6 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
 });
 
 // ── INIT ──
-
 loadNFTs();
 </script>
 <script>
@@ -844,37 +937,20 @@ loadNFTs();
     }
   });
 
-function switchView(which){
-  // FORCE STATIC MARKET TO STAY HIDDEN
-const staticMarket = document.getElementById("view-market");
-if (staticMarket) staticMarket.style.display = "none";
+function switchView(view) {
+  // Update tab active state
+  document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+  const tabMap = {'listings': 0, 'my-orders': 1, 'redeem': 2};
+  document.querySelectorAll('.view-tab')[tabMap[view]]?.classList.add('active');
 
-  const market = document.getElementById('view-market')
-  const purchases = document.getElementById('view-purchases')
-  const redeem = document.getElementById('view-redeem')
-  const liveMarket = document.getElementById('cfc-market-live')
+  // Show/hide sections
+  document.getElementById('listings').style.display = view === 'listings' ? '' : 'none';
+  document.getElementById('my-orders').style.display = view === 'my-orders' ? '' : 'none';
+  document.getElementById('redeem-view').style.display = view === 'redeem' ? '' : 'none';
 
-  // Hide everything first
-  if (market) market.style.display = 'none'
-  if (purchases) purchases.style.display = 'none'
-  if (redeem) redeem.style.display = 'none'
-  if (liveMarket) liveMarket.style.display = 'none'
-
-  // Show only what is needed
-  if (which === 'market'){
-   if (market) market.style.display = 'none'   // keep static NFTs hidden
-    if (liveMarket) liveMarket.style.display = 'block'
-  }
-
-  if (which === 'purchases'){
-    if (purchases) purchases.style.display = 'block'
-  }
-
-  if (which === 'redeem'){
-    if (redeem) redeem.style.display = 'block'
-  }
+  if (view === 'my-orders') loadOrders();
+  if (view === 'redeem') loadRedeem();
 }
-
 
 function loadRedeem() {
   const el = document.getElementById('redeem-list');
@@ -923,79 +999,5 @@ async function redeemOrder(orderId) {
 
 </script>
   
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-
-  const connectBtn = document.getElementById('connectBtn')
- if (connectBtn) connectBtn.addEventListener('click', connect)
-
-  const buy1rlusd = document.getElementById('buy1rlusd')
-  if (buy1rlusd) buy1rlusd.addEventListener('click', () => buyWithRLUSD(CONFIG.ITEMS[0]))
-
-  const buy2rlusd = document.getElementById('buy2rlusd')
-  if (buy2rlusd) buy2rlusd.addEventListener('click', () => buyWithRLUSD(CONFIG.ITEMS[1]))
-
-  const buy3rlusd = document.getElementById('buy3rlusd')
-  if (buy3rlusd) buy3rlusd.addEventListener('click', () => buyWithRLUSD(CONFIG.ITEMS[2]))
-
-  const buy1xrp = document.getElementById('buy1xrp')
-  if (buy1xrp) buy1xrp.addEventListener('click', () => buyWithXRP(CONFIG.ITEMS[0]))
-
-  const buy2xrp = document.getElementById('buy2xrp')
-  if (buy2xrp) buy2xrp.addEventListener('click', () => buyWithXRP(CONFIG.ITEMS[1]))
-
-  const buy3xrp = document.getElementById('buy3xrp')
-  if (buy3xrp) buy3xrp.addEventListener('click', () => buyWithXRP(CONFIG.ITEMS[2]))
-
-
-  if (typeof switchView === 'function') {
-    switchView('market')
-  }
-
-})
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  try {
-
-</script>
-
-<script>
-  const navMarket = document.getElementById('navMarket')
-  const navPurchases = document.getElementById('navPurchases')
- const saved = localStorage.getItem('xummAccount');
-if (saved) window.connectedAccount = saved;
-  const navRedeem = document.getElementById('navRedeem')
-
- if (navMarket){
-  navMarket.addEventListener('click', async () => {
-    // Go to market view
-    switchView('market');
-
-    try {
-      activeCategory = "all";
-
-      // Update tab highlight
-      document.querySelectorAll("#cfc-category-tabs .btn").forEach(b => b.classList.remove("active"));
-      const allBtn = document.querySelector('#cfc-category-tabs .btn[data-cat="all"]');
-      if (allBtn) allBtn.classList.add("active");
-
-      // 🔥 THIS IS THE FIX (you were missing this)
-      await cfc_refresh_market();
-
-      // Re-render
-      if (typeof renderFilteredNFTs === "function") renderFilteredNFTs();
-
-    } catch(e){}
-  })
-}
-
-  if (navPurchases){
-    navPurchases.addEventListener('click', async () => {
-      switchView('purchases')
-      if (typeof loadMyPurchases === 'function') {
-        await loadMyPurchases()
-
-</script>
 </body>
 </html>
