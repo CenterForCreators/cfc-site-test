@@ -617,6 +617,8 @@ async function doConnect(){
     setStatus('Wallet: Disconnected');
   }
 }
+  window.CONFIG = window.CONFIG || {};
+var CONFIG = window.CONFIG;
  // Endpoints (use existing if already in your page's CONFIG)
  var FAUCET_ENDPOINT = (window.CONFIG && window.CONFIG.FAUCET_ENDPOINT) || 'https://cfc-nft-shared-mint-backend.onrender.com/api/faucet-claim';
   const connectBtn = gid('connectBtn');
