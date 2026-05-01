@@ -518,6 +518,8 @@ revealEls.forEach(el=>obs.observe(el));
 
 (function(){
   function gid(id){ return document.getElementById(id); }
+  var CONFIG = window.CONFIG || {};
+window.CONFIG = CONFIG;
   
  CONFIG.FAUCET_ENDPOINT = CONFIG.FAUCET_ENDPOINT || 'https://cfc-nft-shared-mint-backend.onrender.com/api/faucet-claim';
   CONFIG.JOIN_ENDPOINT   = CONFIG.JOIN_ENDPOINT   || 'https://cfc-faucet.onrender.com/api/join';
@@ -617,10 +619,7 @@ async function doConnect(){
     setStatus('Wallet: Disconnected');
   }
 }
-window.CONFIG = window.CONFIG || {
-  FAUCET_ENDPOINT: 'https://cfc-nft-shared-mint-backend.onrender.com/api/faucet-claim'
-};
-var CONFIG = window.CONFIG;
+
  // Endpoints (use existing if already in your page's CONFIG)
  var FAUCET_ENDPOINT = (window.CONFIG && window.CONFIG.FAUCET_ENDPOINT) || 'https://cfc-nft-shared-mint-backend.onrender.com/api/faucet-claim';
   const connectBtn = gid('connectBtn');
