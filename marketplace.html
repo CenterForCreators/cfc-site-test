@@ -927,7 +927,6 @@ function loadRedeem() {
     })
     .catch(() => { el.innerHTML = '<div style="color:#F87171;">Error loading NFTs.</div>'; });
 }
-
 async function redeemOrder(orderId) {
   if (!connectedWallet) { alert('Connect your wallet first.'); return; }
   try {
