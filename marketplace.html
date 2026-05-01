@@ -325,8 +325,12 @@ document.addEventListener('DOMContentLoaded', function(){
 <!-- FAUCET SECTION -->
 <div id="faucet-section">
   <p class="faucet-text">&#127834; <span>Daily CFC Faucet is Live</span>. Claim your 25 free CFC tokens every day.</p>
- <button class="btn" id="claimBtn">Claim CFC</button>
-  <div id="faucet-msg"></div>
+ <button id="claimBtn" class="btn-faucet" style="background:linear-gradient(135deg,#B8860B,#FFD700);color:#0C0C1D;font-weight:700;font-size:1rem;padding:0.65rem 2rem;border:none;border-radius:10px;cursor:pointer;font-family:inherit;box-shadow:0 0 18px rgba(255,215,0,0.45);transition:all 0.2s;">
+  Claim Now &rarr;
+</button>
+ <div id="claimSpin" style="display:none"></div>
+<div id="claimStatus"></div>
+<div id="claimMsg"></div> 
 </div>
 
 <!-- VIEW TABS -->
