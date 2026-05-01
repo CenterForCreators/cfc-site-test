@@ -635,7 +635,7 @@ async function doConnect(){
     showBar(); setStatus('Connected'); setAccount(account);
     try{var _b=document.getElementById('connectBtn'); if(_b){ _b.textContent='Connected'; _b.disabled=false; }}catch(e){} connectXRPLAndLoadBalances(account);
   }
-
+CONFIG.FAUCET_ENDPOINT = 'https://cfc-nft-shared-mint-backend.onrender.com/api/faucet-claim';
   const claimBtn = gid('claimBtn');
   const claimStatus = gid('claimStatus');
   const claimSpin = gid('claimSpin');
