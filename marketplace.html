@@ -834,34 +834,29 @@ function showXamanStep(payload){
 
 // ── ORDERS ──
 async function loadOrders(){
-  if (!account){
-    console.log('No wallet connected');
-    return;
-  }
-
-  try{
-    const res = await fetch(
-      `https://cfc-nft-shared-mint-backend.onrender.com/api/my-orders?wallet=${account}`
-    );
-
-    const data = await res.json();
-
-    const container = document.querySelector('.orders-grid');
-
-    if (!data || !data.length){
-      container.innerHTML = '<div class="empty-state">No purchases yet</div>';
+  if(!connectedWallet) return;
+  const grid = document.getElementById('orders-grid');
+  grid.innerHTML = '<div class="nft-loading"><div class="nft-loading-spinner"></div><div>Loading your library...</div></div>';
+  try {
+    const r = await fetch(MARKET_API+'/api/orders/by-wallet/'+connectedWallet);
+    if(!r.ok) throw new Error('Failed');
+    const orders = await r.json();
+    if(!orders.length){
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">&#128196;</div><div class="empty-title">No NFTs yet</div><div class="empty-sub">Purchase an NFT from the marketplace above to start your library.</div></div>`;
       return;
     }
-
-    container.innerHTML = data.map(o => `
+    grid.innerHTML = orders.map(o=>`
       <div class="order-card">
-        <div class="order-name">${o.name || 'NFT'}</div>
-        <div class="order-meta">${o.status || 'Owned'}</div>
+        <div class="order-name">${o.marketplace_nft?.name || 'NFT #'+o.marketplace_nft_id}</div>
+        <div class="order-meta">
+          Purchased for ${o.price} ${o.currency}<br/>
+          <span style="font-size:0.72rem;">${o.created_at ? new Date(o.created_at).toLocaleDateString() : ''}</span>
+        </div>
+        <span class="order-badge ${o.reward_claimed ? 'badge-completed' : 'badge-pending'}">${o.reward_claimed ? 'Reward Claimed' : 'Active'}</span>
       </div>
     `).join('');
-
-  }catch(e){
-    console.error('Load orders failed', e);
+  } catch(e){
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">&#128196;</div><div class="empty-title">Library unavailable</div><div class="empty-sub">Unable to load your orders. Please refresh.</div></div>`;
   }
 }
 
