@@ -660,7 +660,10 @@ function renderNFTCard(nft){
     <div class="nft-qty">${available} available${nft.sold_count ? ' &middot; '+nft.sold_count+' sold' : ''}</div>
     <div class="nft-footer">
       <div class="nft-prices">
-        ${nft.price_xrp ? `<div class="nft-price-xrp">${nft.price_xrp} XRP</div>` : ''}
+        <img 
+  src="${(o.marketplace_nft && o.marketplace_nft.image_url) || o.image || o.image_url || ''}" 
+  class="buy-nft-img" 
+/>
         ${nft.price_rlusd ? `<div class="nft-price-rlusd">${nft.price_rlusd} RLUSD</div>` : ''}
       </div>
       <div class="nft-buy-btns">
