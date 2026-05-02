@@ -942,6 +942,19 @@ function switchView(view) {
 
   window.switchView = switchView;
 
+document.addEventListener('DOMContentLoaded', function(){
+  const myBtn = Array.from(document.querySelectorAll('.view-tab'))
+    .find(btn => btn.textContent.trim().toLowerCase() === 'my purchases');
+
+  if (myBtn && !myBtn.__bound){
+    myBtn.__bound = true;
+    myBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      console.log('MY PURCHASES CLICKED');
+      switchView('my-orders');
+    });
+  }
+});
 function loadRedeem() {
   const el = document.getElementById('redeem-list');
   if (!connectedWallet) {
