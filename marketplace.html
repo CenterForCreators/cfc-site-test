@@ -490,7 +490,9 @@ revealEls.forEach(el=>obs.observe(el));
 let connectedWallet = null;
 
 function loadWallet(){
-  const saved = localStorage.getItem('cfcWallet');
+  const saved =
+  localStorage.getItem('cfcWallet') ||
+  localStorage.getItem('xrpl_account');
   if(saved && saved.startsWith('r') && saved.length >= 25){
     connectedWallet = saved;
     updateWalletUI();
@@ -515,11 +517,7 @@ async function xamanConnect(){
     await xumm.authorize();
     const account = await xumm.user.account;
     if(account){
-      connectedWallet = account;
-      localStorage.setItem('cfcWallet', account);
-      updateWalletUI();
-      fetchBalances(account);
-      loadOrders();
+     setConnected(account);
     } else {
       if(btn){ btn.textContent = 'Connect Wallet'; btn.disabled = false; }
     }
@@ -552,7 +550,18 @@ function disconnectWallet(){
     btn.parentNode.replaceChild(clone, btn);
   }
 }
+function setConnected(acc){
+  if(!acc) return;
+  if(connectedWallet && connectedWallet === acc) return;
 
+  connectedWallet = acc;
+  localStorage.setItem('cfcWallet', acc);
+  localStorage.setItem('xrpl_account', acc);
+
+  updateWalletUI();
+  fetchBalances(acc);
+  loadOrders();
+}
 function updateWalletUI(){
   const connected = document.getElementById('banner-connected');
   const disconnected = document.getElementById('banner-disconnected');
