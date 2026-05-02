@@ -860,13 +860,12 @@ if(!wallet) return;
     }
    grid.innerHTML = orders.map(o=>`
   <div class="order-card">
+<img src="${o.image_url || 'https://via.placeholder.com/300'}" class="buy-nft-img" />
 
-    <img src="${o.marketplace_nft?.image_url || ''}" class="buy-nft-img" />
-
-    <div class="order-name">
-      ${o.marketplace_nft?.name || 'NFT #' + o.marketplace_nft_id}
-    </div>
-
+<div class="order-name">
+  ${o.name || 'NFT #' + o.marketplace_nft_id}
+</div>
+   
     <div class="order-meta">
       Status: PAID
     </div>
