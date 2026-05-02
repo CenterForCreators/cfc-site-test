@@ -938,7 +938,9 @@ function switchView(view) {
       loadOrders();
     }, 50);
   }
-}
+  }
+
+  window.switchView = switchView;
 
 function loadRedeem() {
   const el = document.getElementById('redeem-list');
