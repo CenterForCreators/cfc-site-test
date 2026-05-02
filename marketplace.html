@@ -831,7 +831,12 @@ function showXamanStep(payload){
 
 // ── ORDERS ──
 async function loadOrders(){
- const wallet = connectedWallet || window.connectedAccount || localStorage.getItem('xummAccount') || sessionStorage.getItem('connectedAccount');
+ const wallet =
+  connectedWallet ||
+  window.connectedAccount ||
+  localStorage.getItem('cfcWallet') ||
+  localStorage.getItem('xummAccount') ||
+  sessionStorage.getItem('connectedAccount');
 if(!wallet) return;
   const grid = document.getElementById('orders-grid');
   grid.innerHTML = '<div class="nft-loading"><div class="nft-loading-spinner"></div><div>Loading your library...</div></div>';
