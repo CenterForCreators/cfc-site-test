@@ -839,7 +839,8 @@ function showXamanStep(payload){
 }
 
 // ── ORDERS ──
-async function loadOrders(){
+  async function loadOrders(){
+    console.log('LOAD ORDERS RUNNING');
  const wallet =
   connectedWallet ||
   window.connectedAccount ||
