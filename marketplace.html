@@ -922,18 +922,22 @@ loadNFTs();
   });
 
 function switchView(view) {
-  // Update tab active state
+  // tabs
   document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
   const tabMap = {'listings': 0, 'my-orders': 1, 'redeem': 2};
   document.querySelectorAll('.view-tab')[tabMap[view]]?.classList.add('active');
 
-  // Show/hide sections
+  // sections
   document.getElementById('listings').style.display = view === 'listings' ? '' : 'none';
   document.getElementById('my-orders').style.display = view === 'my-orders' ? '' : 'none';
   document.getElementById('redeem-view').style.display = view === 'redeem' ? '' : 'none';
 
-  if (view === 'my-orders') loadOrders();
-  if (view === 'redeem') loadRedeem();
+  // 🔥 THIS IS THE MISSING PART (INDEX DOES THIS)
+  if (view === 'my-orders') {
+    setTimeout(() => {
+      loadOrders();
+    }, 50);
+  }
 }
 
 function loadRedeem() {
