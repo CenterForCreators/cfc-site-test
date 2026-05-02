@@ -845,19 +845,46 @@ async function loadOrders(){
       grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">&#128196;</div><div class="empty-title">No NFTs yet</div><div class="empty-sub">Purchase an NFT from the marketplace above to start your library.</div></div>`;
       return;
     }
-    grid.innerHTML = orders.map(o=>`
-      <div class="order-card">
-        <div class="order-name">${o.marketplace_nft?.name || 'NFT #'+o.marketplace_nft_id}</div>
-        <div class="order-meta">
-          Purchased for ${o.price} ${o.currency}<br/>
-          <span style="font-size:0.72rem;">${o.created_at ? new Date(o.created_at).toLocaleDateString() : ''}</span>
-        </div>
-        <span class="order-badge ${o.reward_claimed ? 'badge-completed' : 'badge-pending'}">${o.reward_claimed ? 'Reward Claimed' : 'Active'}</span>
-      </div>
-    `).join('');
-  } catch(e){
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">&#128196;</div><div class="empty-title">Library unavailable</div><div class="empty-sub">Unable to load your orders. Please refresh.</div></div>`;
-  }
+   grid.innerHTML = orders.map(o=>`
+  <div class="order-card">
+
+    <img src="${o.marketplace_nft?.image_url || ''}" class="buy-nft-img" />
+
+    <div class="order-name">
+      ${o.marketplace_nft?.name || 'NFT #' + o.marketplace_nft_id}
+    </div>
+
+    <div class="order-meta">
+      Status: PAID
+    </div>
+
+    <div style="margin-top:0.75rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+
+      ${
+        o.reward_claimed
+        ? `<span class="order-badge badge-completed">Reward Claimed</span>`
+        : `<button class="btn-full-gold"
+             onclick="claimCfcReward(${o.submission_id}, this)">
+             Claim Your Bonus CFC Rewards
+           </button>`
+      }
+
+      <button class="btn-full-outline"
+        onclick="window.open('${o.marketplace_nft?.content_url || ''}', '_blank')">
+        Open Content
+      </button>
+
+    </div>
+
+  </div>
+`).join('');
+    } catch(e){
+  grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+    <div class="empty-icon">&#128196;</div>
+    <div class="empty-title">Library unavailable</div>
+    <div class="empty-sub">Unable to load your orders. Please refresh.</div>
+  </div>`;
+}
 }
 
 // ── MODAL HELPERS ──
