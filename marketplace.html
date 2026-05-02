@@ -831,11 +831,12 @@ function showXamanStep(payload){
 
 // ── ORDERS ──
 async function loadOrders(){
-  if(!connectedWallet) return;
+ const wallet = connectedWallet || window.connectedAccount || localStorage.getItem('xummAccount') || sessionStorage.getItem('connectedAccount');
+if(!wallet) return;
   const grid = document.getElementById('orders-grid');
   grid.innerHTML = '<div class="nft-loading"><div class="nft-loading-spinner"></div><div>Loading your library...</div></div>';
   try {
-    const r = await fetch(MARKET_API+'/api/orders/by-wallet/'+connectedWallet);
+    const r = await fetch(MARKET_API+'/api/orders/by-wallet/'+wallet);
     if(!r.ok) throw new Error('Failed');
     const orders = await r.json();
     if(!orders.length){
